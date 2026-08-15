@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "source": "US Census Bureau, ACS 2020-2024 5-Year Estimates, tables B19013, B19001, B19126, B19215 & B20017",
+    "unit": "USD",
+    "acs5Vintage": 2024,
+    "acs5YearRange": "2020-2024",
+    "generatedAt": "2026-08-08T10:54:24.927Z"
+  },
+  "medianHouseholdIncome": 80734,
+  "percentileAnchors": [
+    {
+      "topPercent": 13.361113953643425,
+      "value": 200000
+    },
+    {
+      "topPercent": 22.960750551105626,
+      "value": 150000
+    },
+    {
+      "topPercent": 30.391026844627554,
+      "value": 125000
+    },
+    {
+      "topPercent": 40.504169484178504,
+      "value": 100000
+    },
+    {
+      "topPercent": 53.132905244871424,
+      "value": 75000
+    },
+    {
+      "topPercent": 62.22614728989255,
+      "value": 60000
+    },
+    {
+      "topPercent": 68.63400494891583,
+      "value": 50000
+    },
+    {
+      "topPercent": 71.95879505395662,
+      "value": 45000
+    },
+    {
+      "topPercent": 75.38930259857392,
+      "value": 40000
+    },
+    {
+      "topPercent": 78.75075285835455,
+      "value": 35000
+    },
+    {
+      "topPercent": 82.12367513489544,
+      "value": 30000
+    },
+    {
+      "topPercent": 85.367983915745,
+      "value": 25000
+    },
+    {
+      "topPercent": 88.65324528148406,
+      "value": 20000
+    },
+    {
+      "topPercent": 91.63914388622062,
+      "value": 15000
+    },
+    {
+      "topPercent": 95.04935157143338,
+      "value": 10000
+    },
+    {
+      "topPercent": 100,
+      "value": 1
+    }
+  ]
+}
