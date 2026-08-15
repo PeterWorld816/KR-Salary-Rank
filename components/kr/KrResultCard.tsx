@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/lib/LanguageProvider";
 import { formatTemplate } from "@/lib/i18n";
 import DistributionChart from "@/components/DistributionChart";
-import TierBadge from "@/components/us/TierBadge";
+import TierBadge from "@/components/TierBadge";
 import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import Spinner from "@/components/Spinner";

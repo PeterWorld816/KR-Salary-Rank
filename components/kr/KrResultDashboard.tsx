@@ -15,11 +15,11 @@ import { getSidoBySlug, getGuBySlug } from "@/data/kr/regionMeta";
 import { buildKrIncomeComparison, getMostSpecificKrComparison, krRegionIncomeMeta, type KrIncomeComparisonRow } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
 import DistributionChart from "@/components/DistributionChart";
-import TierBadge from "@/components/us/TierBadge";
+import TierBadge from "@/components/TierBadge";
 import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import KrShell from "@/components/kr/KrShell";
-import Footer from "@/components/us/Footer";
+import Footer from "@/components/Footer";
 import Spinner from "@/components/Spinner";
 
 const CHART_MIN = 1500;
@@ -49,7 +49,7 @@ function KrResultDashboardContent() {
           <h1 className="mb-2 text-[22px] font-extrabold tracking-tight">{t.krResultMissingTitle}</h1>
           <p className="mb-6 text-[14px] text-white/55">{t.krResultMissingDesc}</p>
           <Link
-            href="/kr"
+            href="/"
             className="inline-flex items-center gap-1.5 rounded-full bg-[#34D399] px-5 py-2.5 text-[14px] font-bold text-[#04120C] transition-opacity hover:opacity-90"
           >
             {t.krResultMissingCta}
@@ -63,7 +63,7 @@ function KrResultDashboardContent() {
   const rows = buildKrIncomeComparison(input.annualIncome, sido.slug, gu && gu.parentSlug === sido.slug ? gu.slug : null);
   const best = getMostSpecificKrComparison(rows);
   const above = best.ratioPercent >= 100;
-  const backHref = "/kr" + (sp.toString() ? `?${sp.toString()}` : "");
+  const backHref = "/" + (sp.toString() ? `?${sp.toString()}` : "");
 
   return (
     <KrShell>

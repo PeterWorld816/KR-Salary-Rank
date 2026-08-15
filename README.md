@@ -1,82 +1,52 @@
-# 🇺🇸 US Income & Net Worth Percentile
+# 🇰🇷 내 소득 상위 몇 %?
 
-Pick a state and county on the map (or search by name), enter your gender, marital status,
-pre-tax income, net worth, and 401k balance, and see where you rank against real US Census
-Bureau / Federal Reserve data — county, nationwide, and by age band. Every calculation runs
-100% locally in the browser — no API calls, no backend.
+지도에서 시/도(또는 시군구)를 고르고 연 소득을 입력하면, 국세청 국세통계 기준 지역 평균과
+비교해 내 소득이 어디쯤인지 바로 확인할 수 있는 사이트입니다. 모든 계산은 브라우저 안에서만
+이뤄집니다 — API 호출도, 백엔드도 없습니다.
 
 ---
 
-## Data & calculation logic
+## 데이터 & 계산 로직
 
-- `data/us/stateIncome.json` / `data/us/countyIncome.json` / `data/us/nationalIncome.json` —
-  median household income + percentile anchor tables per state/county/nation. Source: US
-  Census Bureau ACS 5-Year (and, for states, latest 1-Year) estimates. Regenerate with
-  `npm run fetch:census` (requires a Census API key, see `scripts/fetchCensusData.ts`).
-- `data/us/netWorthPercentilesUS.json` — nationwide net worth percentile anchors. Source:
-  Federal Reserve Survey of Consumer Finances.
-- `data/us/401kByAge.json` — average/median 401k balance by age band. Source: Vanguard, How
-  America Saves.
-- `data/us/incomeByAge.json` / `data/us/netWorthByAge.json` — median income / average net
-  worth by age band, used only to rescale a user's value against the nationwide percentile
-  curve above ("top X% nationwide for your age") — see each file's `meta.note` for how the
-  six age bands map onto the coarser brackets ACS/SCF actually publish.
-- `lib/percentileTable.ts` — shared log-log interpolation percentile calculator.
-- `lib/usIncomeCalc.ts` — looks up income/net worth/401k percentiles for a given
-  state/county/age band from the data above.
-- `lib/usInput.ts` — query-string codec for the input panel's answers, so they survive
-  navigation from `/us` → `/us/[state]` → `/us/[state]/[county]`.
+- `data/kr/regionIncome.json` — 시/도·시군구별 평균 소득. 출처: 국세청 국세통계 4.2.15
+  (시군구별 근로소득 연말정산 신고현황, 2023년 귀속) 및 국세청 2024.12 4차 국세통계 브리핑.
+  아직 실측치가 없는 지역은 추정치로 채우지 않고 "준비중"으로만 표시합니다.
+- `data/kr/regionMeta.ts` — 17개 시/도 및 시군구 라우팅 슬러그, KOSIS/SGIS 2자리 지역 코드.
+- `data/kr/skorea-provinces-2018-topo-simple.json` — 시/도 경계 지도.
+  출처: [southkorea/southkorea-maps](https://github.com/southkorea/southkorea-maps)
+  (통계청 SGIS 원자료를 공공누리 제1유형 라이선스로 가공).
+- `lib/krIncomeCalc.ts` — 지역 평균 대비 소득 비교, 추정 백분위 계산.
+- `lib/krInput.ts` — 입력 소득을 쿼리 스트링에 담아 `/` → `/[region]` → `/result` 이동 간
+  값을 유지하는 코덱.
 
-## Structure
+## 구조
 
 ```
-middleware.ts                            # "/" -> /us or /kr by Accept-Language; /kr/* rewrites to /us/*
 app/
-  page.tsx                              # fallback redirect (middleware handles this first)
-  us/
-    page.tsx / UsHomeClient.tsx          # US map — pick a state
-    [state]/page.tsx / UsStateClient.tsx  # county map + SEO content (median income, thresholds, county directory); picking a county starts the result flow
-    [state]/[county]/page.tsx             # SEO landing page per county (ISR, revalidate=86400) — CTAs into /us/result.
-                                           # Old single-page result links (?d=...) redirect there via middleware.ts instead.
-    about/ · privacy/ · contact/          # static info pages
-    result/
-      page.tsx / DashboardResultClient.tsx  # unified result dashboard (?st=&co=&d= carry state), see below
-      overall/ state/ demographic/          # redirect stubs -> /result, kept so old shared links don't 404
-data/us/
-  stateIncome.json / countyIncome.json / nationalIncome.json
-  netWorthPercentilesUS.json / 401kByAge.json / stateMeta.ts
-  incomeByAge.json / netWorthByAge.json
+  page.tsx / KrHomeClient.tsx        # 홈 — 시/도 지도
+  [region]/page.tsx / KrRegionClient.tsx  # 시/도별 시군구 지도 + 결과 진입점
+  result/page.tsx                    # 결과 대시보드 (?region=&gu=&d= 로 답변 유지)
+  about/ · privacy/ · contact/       # 정적 안내 페이지
+data/kr/
+  regionIncome.json / regionMeta.ts / skorea-provinces-2018-topo-simple.json
 lib/
-  usIncomeCalc.ts / usInput.ts / usFormat.ts / usGeo.ts / percentileTable.ts
-  i18n.ts                                # ko/en copy
-  serverLocale.ts / seo.ts / useLocaleBase.ts  # /us vs /kr locale plumbing
-  legacyResultRedirect.ts                # shared redirect for the retired /result/overall|state|demographic routes
-components/us/
-  UsMap.tsx / UsGeoList.tsx / UsInputPanel.tsx / UsResultCard.tsx / UsShell.tsx / Footer.tsx
-  result/                                 # shared pieces for the result dashboard
+  krIncomeCalc.ts / krInput.ts / krFormat.ts / krGeo.ts
+  i18n.ts                            # 한국어 카피
+components/kr/
+  KrMap.tsx / KrGeoList.tsx / KrInputPanel.tsx / KrResultCard.tsx
+  KrResultDashboard.tsx / KrShell.tsx / KrIncomeLegend.tsx
 ```
 
-### Result flow
-
-Picking a county navigates to `/us/result?st=<state>&co=<county>&d=<answers>` — one scrolling
-dashboard with every percentile (national/state/county/age/net worth/401k) computed up front,
-plus the share card and "compare with a friend" link near the top. It's a real page (own URL,
-works with browser back) that re-derives everything from the query string on each render, same
-as before. `/kr/result` serves the same page in Korean via the middleware rewrite. The old
-three-step routes (`/result/overall`, `/result/state`, `/result/demographic`) still exist as
-redirect stubs so old shared links keep working, but they're disallowed in robots.txt and
-non-canonical — new links should point at `/result` directly.
-
-## Local dev
+## 로컬 개발
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+http://localhost:3000 을 열면 바로 한국 홈 화면이 뜹니다.
 
-## Deploy (Vercel)
+## 배포 (Vercel)
 
 ```bash
 vercel
@@ -84,8 +54,7 @@ vercel
 
 ## AdSense
 
-- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` env var — the AdSense publisher ID ads actually load with
-  (see `lib/ads.ts`; ads only render on the exact host `NEXT_PUBLIC_SITE_URL` points at).
-- `public/ads.txt` — 완료됨: the real publisher ID (`pub-7379794980536826`) is in place, no
-  longer a placeholder. Keep it in sync with `NEXT_PUBLIC_ADSENSE_CLIENT_ID` above — AdSense
-  won't serve ads on the domain without a matching `ads.txt` entry.
+- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` 환경변수 — 실제 광고가 로드되는 AdSense 퍼블리셔 ID
+  (`lib/ads.ts` 참고; `NEXT_PUBLIC_SITE_URL`이 가리키는 호스트에서만 광고가 렌더링됩니다).
+- `public/ads.txt` — 퍼블리셔 ID(`pub-7379794980536826`)가 반영되어 있습니다.
+  `NEXT_PUBLIC_ADSENSE_CLIENT_ID`와 항상 동일하게 유지하세요.

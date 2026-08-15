@@ -1,7 +1,7 @@
 // Small "this color = this income range" key shown under the 시/도 choropleth
 // — bands come from components/us/colorScale.ts (pure numeric min/max/value
 // logic, no US-specific units) so they always match what KrMap painted.
-import { buildIncomeScaleBands, NO_DATA_FILL } from "@/components/us/colorScale";
+import { buildIncomeScaleBands, NO_DATA_FILL } from "@/components/colorScale";
 import { formatManwon } from "@/lib/krFormat";
 import { useLanguage } from "@/lib/LanguageProvider";
 

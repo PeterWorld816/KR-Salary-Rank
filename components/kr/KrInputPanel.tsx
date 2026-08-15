@@ -132,7 +132,7 @@ export default function KrInputPanel() {
   }
 
   const summary = formatManwonCompact(form.annualIncome);
-  const homeHref = `/kr?${buildKrSearchParams(form, "ko").toString()}`;
+  const homeHref = `/?${buildKrSearchParams(form, "ko").toString()}`;
 
   return (
     <>
