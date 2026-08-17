@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useLanguage } from "@/lib/LanguageProvider";
+import { translations } from "@/lib/i18n";
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const t = translations.ko;
 
   const links = [
     { href: "/about", label: t.footerAbout },

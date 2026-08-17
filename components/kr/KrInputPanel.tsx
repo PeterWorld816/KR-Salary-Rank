@@ -10,7 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronDown, Home } from "lucide-react";
-import { useLanguage } from "@/lib/LanguageProvider";
+import { translations } from "@/lib/i18n";
 import { formatManwonCompact } from "@/lib/krFormat";
 import { readKrInputFromSearch, buildKrSearchParams, type KrInput } from "@/lib/krInput";
 
@@ -117,7 +117,7 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
 }
 
 export default function KrInputPanel() {
-  const { t } = useLanguage();
+  const t = translations.ko;
   const pathname = usePathname();
   const router = useRouter();
   const sp = useSearchParams();

@@ -3,10 +3,10 @@
 // logic, no US-specific units) so they always match what KrMap painted.
 import { buildIncomeScaleBands, NO_DATA_FILL } from "@/components/colorScale";
 import { formatManwon } from "@/lib/krFormat";
-import { useLanguage } from "@/lib/LanguageProvider";
+import { translations } from "@/lib/i18n";
 
 export default function KrIncomeLegend({ min, max }: { min: number; max: number }) {
-  const { t } = useLanguage();
+  const t = translations.ko;
   const bands = buildIncomeScaleBands(min, max);
   if (bands.length === 0) return null;
 

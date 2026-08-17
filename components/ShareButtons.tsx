@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toBlob } from "html-to-image";
 import type { RefObject } from "react";
 import { Share2, Download, Sparkles } from "lucide-react";
-import { useLanguage } from "@/lib/LanguageProvider";
+import { translations } from "@/lib/i18n";
 import Spinner from "@/components/Spinner";
 
 // iOS Safari (and in-app browsers built on it, e.g. Instagram/KakaoTalk's
@@ -65,7 +65,7 @@ export default function ShareButtons({
   storyHeight?: number;
   storyDownloadName?: string;
 }) {
-  const { t } = useLanguage();
+  const t = translations.ko;
   const [saving, setSaving] = useState(false);
   const [savingStory, setSavingStory] = useState(false);
   const [toast, setToast] = useState<string | null>(null);

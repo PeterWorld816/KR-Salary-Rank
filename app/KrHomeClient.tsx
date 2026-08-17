@@ -2,8 +2,7 @@
 import { Suspense, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { FeatureCollection, Geometry } from "geojson";
-import { useLanguage } from "@/lib/LanguageProvider";
-import { formatTemplate } from "@/lib/i18n";
+import { formatTemplate, translations } from "@/lib/i18n";
 import KrShell from "@/components/kr/KrShell";
 import KrMap, { type KrMapFeatureProps } from "@/components/kr/KrMap";
 import KrGeoList from "@/components/kr/KrGeoList";
@@ -17,7 +16,7 @@ import { incomeFill } from "@/components/colorScale";
 import { formatManwon } from "@/lib/krFormat";
 
 function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureProps> }) {
-  const { t } = useLanguage();
+  const t = translations.ko;
   const router = useRouter();
   const sp = useSearchParams();
   const qs = sp.toString();

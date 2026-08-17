@@ -1,15 +1,8 @@
 // Pure i18n data/logic — no React, no "use client". Safe to import from
-// client components, server components, and edge routes alike. The
-// React-facing context/hook lives in lib/LanguageProvider.tsx.
+// client components, server components, and edge routes alike. Korea-only
+// site: no language switching, just hardcoded Korean strings.
 
 export type LangCode = "ko";
-
-// Any piece of content that varies by language — used across data/*.ts too.
-export type Localized = Record<LangCode, string>;
-
-export function pick(text: Localized, lang: LangCode): string {
-  return text[lang] ?? text.ko;
-}
 
 // "{key}" 자리표시자를 vars의 값으로 채운다.
 export function formatTemplate(template: string, vars: Record<string, string | number>): string {
@@ -516,12 +509,3 @@ export const translations: Record<LangCode, Translations> = {
     krDashboardIncomeSectionTitle: "소득 비교",
   },
 };
-
-// ── Language metadata ────────────────────────────────────────────────────────
-export interface LangMeta {
-  code: LangCode;
-  label: string;
-  dir: "ltr" | "rtl";
-}
-
-export const LANGUAGES: LangMeta[] = [{ code: "ko", label: "한국어", dir: "ltr" }];

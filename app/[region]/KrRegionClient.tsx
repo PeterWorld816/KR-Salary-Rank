@@ -3,8 +3,7 @@ import { Suspense, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { useLanguage } from "@/lib/LanguageProvider";
-import { formatTemplate } from "@/lib/i18n";
+import { formatTemplate, translations } from "@/lib/i18n";
 import KrShell from "@/components/kr/KrShell";
 import KrGeoList from "@/components/kr/KrGeoList";
 import KrResultCard from "@/components/kr/KrResultCard";
@@ -26,7 +25,7 @@ function KrRegionContent({
   availableGus: { meta: GuMeta; income: KrRegionIncome }[];
   pendingGus: GuMeta[];
 }) {
-  const { t } = useLanguage();
+  const t = translations.ko;
   const router = useRouter();
   const sp = useSearchParams();
   const qs = sp.toString();

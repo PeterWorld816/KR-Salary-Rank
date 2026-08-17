@@ -9,8 +9,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
-import { useLanguage } from "@/lib/LanguageProvider";
-import { formatTemplate } from "@/lib/i18n";
+import { formatTemplate, translations, type Translations } from "@/lib/i18n";
 import { getSidoBySlug, getGuBySlug } from "@/data/kr/regionMeta";
 import { buildKrIncomeComparison, getMostSpecificKrComparison, krRegionIncomeMeta, type KrIncomeComparisonRow } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
@@ -25,14 +24,14 @@ import Spinner from "@/components/Spinner";
 const CHART_MIN = 1500;
 const CHART_MAX = 15000;
 
-function levelLabel(level: KrIncomeComparisonRow["level"], t: ReturnType<typeof useLanguage>["t"]): string {
+function levelLabel(level: KrIncomeComparisonRow["level"], t: Translations): string {
   if (level === "national") return t.krNationalLabel;
   if (level === "sido") return t.krSidoLabel;
   return t.krGuLabel;
 }
 
 function KrResultDashboardContent() {
-  const { t, lang } = useLanguage();
+  const t = translations.ko;
   const sp = useSearchParams();
   const input = readKrInputFromSearch(sp);
   const sidoSlug = sp.get("region");
@@ -88,7 +87,7 @@ function KrResultDashboardContent() {
             <p className="text-[12px] font-semibold text-white/60">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
           </div>
           <div className="shrink-0">
-            <DistributionChart monthlySalary={input.annualIncome} width={220} lang={lang} dark min={CHART_MIN} max={CHART_MAX} averageValue={best.mean} />
+            <DistributionChart monthlySalary={input.annualIncome} width={220} dark min={CHART_MIN} max={CHART_MAX} averageValue={best.mean} />
           </div>
         </div>
 

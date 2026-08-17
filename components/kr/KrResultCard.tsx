@@ -7,8 +7,7 @@
 // comment for why those two numbers carry different weight here.
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useLanguage } from "@/lib/LanguageProvider";
-import { formatTemplate } from "@/lib/i18n";
+import { formatTemplate, translations } from "@/lib/i18n";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
 import { getTier } from "@/lib/tier";
@@ -21,7 +20,7 @@ const CHART_MIN = 1500; // 만원
 const CHART_MAX = 15000; // 만원
 
 function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: string | null; presetGuSlug: string | null }) {
-  const { t, lang } = useLanguage();
+  const t = translations.ko;
   const sp = useSearchParams();
   const input = readKrInputFromSearch(sp);
 
@@ -47,7 +46,6 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
             <DistributionChart
               monthlySalary={input.annualIncome}
               width={CHART_WIDTH}
-              lang={lang}
               dark
               min={CHART_MIN}
               max={CHART_MAX}
