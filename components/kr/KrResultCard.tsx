@@ -32,15 +32,15 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
     <>
       <KrInputPanel />
       <div className="mx-auto max-w-2xl px-6 pt-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 sm:flex-nowrap">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
           <div className="flex min-w-0 flex-col items-start gap-1">
             <TierBadge tier={getTier(best.estimatedTopPercent)} />
-            <div className="text-[28px] font-extrabold leading-none tracking-tight text-[#FBBF24]">
+            <div className="text-display leading-none text-warn">
               {formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, {
                 percent: Math.abs(Math.round((best.ratioPercent - 100) * 10) / 10),
               })}
             </div>
-            <p className="text-[12px] font-semibold text-white/60">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
+            <p className="text-caption font-semibold text-text-secondary">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
           </div>
           <div className="shrink-0">
             <DistributionChart
@@ -53,7 +53,7 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
             />
           </div>
         </div>
-        <p className="mt-2 text-[11px] text-white/35">
+        <p className="mt-2 text-caption text-text-tertiary">
           {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} ({t.krEstimatedPercentileLabel}) —{" "}
           {t.krEstimatedPercentileDisclaimer}
         </p>
@@ -67,7 +67,7 @@ export default function KrResultCard(props: { presetSidoSlug: string | null; pre
     <Suspense
       fallback={
         <div className="flex items-center justify-center py-8">
-          <Spinner className="h-6 w-6 border-[3px] border-white/20 border-t-[#34D399]" />
+          <Spinner className="h-6 w-6 border-[3px] border-border-strong border-t-accent" />
         </div>
       }
     >

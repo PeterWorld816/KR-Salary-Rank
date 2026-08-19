@@ -84,15 +84,15 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
       <KrResultCard presetSidoSlug={null} presetGuSlug={null} />
 
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
-        <h1 className="mb-2 text-[28px] font-extrabold tracking-tight text-balance">{t.krAppTitle}</h1>
-        <p className="mb-8 max-w-xl text-[15px] text-white/55">{t.krTagline}</p>
+        <h1 className="mb-2 text-display text-balance">{t.krAppTitle}</h1>
+        <p className="mb-8 max-w-xl text-body text-text-secondary">{t.krTagline}</p>
 
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-[15px] font-bold text-white/90">{t.krMapTitle}</h2>
-          <span className="text-[12px] text-white/40">{t.krMapHint}</span>
+          <h2 className="text-title text-text">{t.krMapTitle}</h2>
+          <span className="text-caption text-text-tertiary">{t.krMapHint}</span>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-2 sm:p-4">
+        <div className="rounded-2xl border border-border bg-surface p-2 sm:p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1">
               <KrMap geo={geo} onSelect={handleSelect} getFill={getFill} getLabel={getLabel} disabledIds={disabledIds} height={520} />
@@ -111,10 +111,10 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
           <KrIncomeLegend min={min} max={max} />
         </div>
 
-        <div className="mt-2 rounded-lg bg-white/[0.03] px-4 py-3 text-center">
-          <p className="text-[12px] text-white/40">{formatTemplate(t.krSourceLabelTemplate, { asOf: krRegionIncomeMeta.asOf })}</p>
-          <p className="mt-1 text-[12px] text-white/30">{t.krDisclaimer}</p>
-          <p className="mt-1 text-[12px] text-white/25">🔒 {t.privacyNotice}</p>
+        <div className="mt-2 rounded-lg bg-surface px-4 py-3 text-center">
+          <p className="text-caption text-text-tertiary">{formatTemplate(t.krSourceLabelTemplate, { asOf: krRegionIncomeMeta.asOf })}</p>
+          <p className="mt-1 text-caption text-text-tertiary">{t.krDisclaimer}</p>
+          <p className="mt-1 text-caption text-text-tertiary">🔒 {t.privacyNotice}</p>
         </div>
 
         <Footer />
@@ -129,7 +129,7 @@ export default function KrHomeClient({ geo }: { geo: FeatureCollection<Geometry,
       fallback={
         <KrShell>
           <div className="flex min-h-screen items-center justify-center">
-            <Spinner className="h-8 w-8 border-[3px] border-white/20 border-t-[#34D399]" />
+            <Spinner className="h-8 w-8 border-[3px] border-border-strong border-t-accent" />
           </div>
         </KrShell>
       }

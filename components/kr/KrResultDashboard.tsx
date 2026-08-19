@@ -45,11 +45,11 @@ function KrResultDashboardContent() {
       <KrShell>
         <KrInputPanel />
         <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
-          <h1 className="mb-2 text-[22px] font-extrabold tracking-tight">{t.krResultMissingTitle}</h1>
-          <p className="mb-6 text-[14px] text-white/55">{t.krResultMissingDesc}</p>
+          <h1 className="mb-2 text-display">{t.krResultMissingTitle}</h1>
+          <p className="mb-6 text-body text-text-secondary">{t.krResultMissingDesc}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#34D399] px-5 py-2.5 text-[14px] font-bold text-[#04120C] transition-opacity hover:opacity-90"
+            className="touch-target inline-flex items-center gap-1.5 rounded-full bg-accent px-5 text-body font-bold text-on-accent transition-opacity hover:opacity-90"
           >
             {t.krResultMissingCta}
           </Link>
@@ -68,46 +68,46 @@ function KrResultDashboardContent() {
     <KrShell>
       <KrInputPanel />
       <div className="mx-auto max-w-2xl px-4 pb-16 pt-8 sm:px-6">
-        <Link href={backHref} className="mb-6 inline-flex items-center gap-1 text-[13px] text-white/50 transition-colors hover:text-white/80">
+        <Link href={backHref} className="mb-6 inline-flex items-center gap-1 text-caption text-text-secondary transition-colors hover:text-text">
           <ChevronLeft className="h-4 w-4" />
           {t.krBackToKrMap}
         </Link>
 
-        <h1 className="mb-2 text-[26px] font-extrabold tracking-tight text-balance">{t.krDashboardIncomeSectionTitle}</h1>
-        <p className="mb-6 max-w-xl text-[15px] text-white/55">{t.krResultDashboardIntro}</p>
+        <h1 className="mb-2 text-display text-balance">{t.krDashboardIncomeSectionTitle}</h1>
+        <p className="mb-6 max-w-xl text-body text-text-secondary">{t.krResultDashboardIntro}</p>
 
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 sm:flex-nowrap">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
           <div className="flex min-w-0 flex-col items-start gap-1">
             <TierBadge tier={getTier(best.estimatedTopPercent)} />
-            <div className="text-[32px] font-extrabold leading-none tracking-tight text-[#FBBF24]">
+            <div className="text-display leading-none text-warn">
               {formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, {
                 percent: Math.abs(Math.round((best.ratioPercent - 100) * 10) / 10),
               })}
             </div>
-            <p className="text-[12px] font-semibold text-white/60">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
+            <p className="text-caption font-semibold text-text-secondary">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
           </div>
           <div className="shrink-0">
             <DistributionChart monthlySalary={input.annualIncome} width={220} dark min={CHART_MIN} max={CHART_MAX} averageValue={best.mean} />
           </div>
         </div>
 
-        <div className="mb-8 rounded-xl border border-[#FBBF24]/20 bg-[#FBBF24]/[0.06] px-4 py-3">
-          <p className="text-[12px] font-semibold text-[#FBBF24]">
+        <div className="mb-8 rounded-xl border border-warn-line bg-warn-tint px-4 py-3">
+          <p className="text-caption font-semibold text-warn">
             {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} · {t.krEstimatedPercentileLabel}
           </p>
-          <p className="mt-1 text-[12px] leading-relaxed text-white/55">{t.krEstimatedPercentileDisclaimer}</p>
+          <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
         </div>
 
-        <h2 className="mb-3 text-[15px] font-bold text-white/90">{t.krCompareChartTitle}</h2>
-        <dl className="mb-8 divide-y divide-white/[0.06] rounded-xl border border-white/10 bg-white/[0.02] px-4">
+        <h2 className="mb-3 text-title text-text">{t.krCompareChartTitle}</h2>
+        <dl className="mb-8 divide-y divide-border rounded-xl border border-border bg-surface px-4">
           {rows.map((row) => (
             <div key={row.level} className="flex items-center justify-between py-3">
-              <dt className="text-[13px] font-medium text-white/70">
-                {levelLabel(row.level, t)} <span className="text-white/40">· {row.name}</span>
+              <dt className="text-caption font-medium text-text-secondary">
+                {levelLabel(row.level, t)} <span className="text-text-tertiary">· {row.name}</span>
               </dt>
               <dd className="text-right">
-                <div className="text-[14px] font-bold tabular-nums text-white">{formatManwon(row.mean)}</div>
-                <div className="text-[11px] tabular-nums text-white/40">
+                <div className="text-body font-bold tabular-nums text-text">{formatManwon(row.mean)}</div>
+                <div className="text-caption tabular-nums text-text-tertiary">
                   {row.ratioPercent}% · {formatTemplate(t.topPercentTemplate, { percent: row.estimatedTopPercent })}
                 </div>
               </dd>
@@ -115,9 +115,9 @@ function KrResultDashboardContent() {
           ))}
         </dl>
 
-        <p className="mb-1 text-[12px] text-white/40">{formatTemplate(t.krSourceLabelTemplate, { asOf: krRegionIncomeMeta.asOf })}</p>
-        <p className="mb-1 text-[12px] text-white/30">{t.krDisclaimer}</p>
-        <p className="text-[12px] text-white/25">🔒 {t.privacyNotice}</p>
+        <p className="mb-1 text-caption text-text-tertiary">{formatTemplate(t.krSourceLabelTemplate, { asOf: krRegionIncomeMeta.asOf })}</p>
+        <p className="mb-1 text-caption text-text-tertiary">{t.krDisclaimer}</p>
+        <p className="text-caption text-text-tertiary">🔒 {t.privacyNotice}</p>
 
         <Footer />
       </div>
@@ -131,7 +131,7 @@ export default function KrResultDashboard() {
       fallback={
         <KrShell>
           <div className="flex min-h-screen items-center justify-center">
-            <Spinner className="h-8 w-8 border-[3px] border-white/20 border-t-[#34D399]" />
+            <Spinner className="h-8 w-8 border-[3px] border-border-strong border-t-accent" />
           </div>
         </KrShell>
       }

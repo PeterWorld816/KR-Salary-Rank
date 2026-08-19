@@ -26,6 +26,14 @@
   --color-accent-active: #036B4C;
   --color-accent-tint: #ECFDF5;
   --color-accent-line: #A7F3D0;
+  --color-on-accent: #FFFFFF; /* text color placed on top of --color-accent */
+
+  /* Secondary "headline number" accent — see tailwind.config.ts's `warn` comment */
+  --color-warn: #B45309;
+  --color-warn-tint: #FFFBEB;
+  --color-warn-line: #FDE68A;
+
+  --color-overlay: rgba(255, 255, 255, 0.85); /* translucent sticky-header backdrop */
 
   --color-danger: #DC2626;
 
@@ -38,6 +46,41 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
+}
+
+/* /kr dark theme — scoped override of the same --color-* tokens, applied by
+   components/kr/KrShell.tsx to every /kr page. The rest of the site (/us,
+   marketing pages) keeps the light palette above; /kr keeps its existing
+   dark/neon look, but now every components/kr/** file sources it from these
+   variables (or the tailwind.config.ts color/fontSize mappings) instead of
+   hardcoding hex values inline. */
+.kr-theme {
+  --color-bg: #0B0C0E;
+  --color-bg-subtle: rgba(255, 255, 255, 0.06);
+  --color-surface: rgba(255, 255, 255, 0.03);
+  --color-border: rgba(255, 255, 255, 0.10);
+  --color-border-strong: rgba(255, 255, 255, 0.20);
+
+  --color-text: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.60);
+  --color-text-tertiary: rgba(255, 255, 255, 0.40);
+
+  --color-accent: #34D399;
+  --color-accent-hover: #2BBF89;
+  --color-accent-active: #10B981;
+  --color-accent-tint: rgba(52, 211, 153, 0.10);
+  --color-accent-line: rgba(52, 211, 153, 0.30);
+  --color-on-accent: #04120C;
+
+  --color-warn: #FBBF24;
+  --color-warn-tint: rgba(251, 191, 36, 0.06);
+  --color-warn-line: rgba(251, 191, 36, 0.20);
+
+  --color-overlay: rgba(8, 9, 10, 0.85);
+
+  --color-danger: #F87171;
+
+  color: var(--color-text);
 }
 
 * { box-sizing: border-box; }
@@ -68,14 +111,16 @@ body {
     padding: 0 20px;
   }
   .btn-primary {
-    @apply text-white shadow-sm;
+    @apply shadow-sm;
     background: var(--color-accent);
+    color: var(--color-on-accent);
   }
   .btn-primary:hover { background: var(--color-accent-hover); }
   .btn-primary:active { background: var(--color-accent-active); transform: scale(0.98); }
 
   .btn-secondary {
-    @apply bg-white shadow-sm;
+    @apply shadow-sm;
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
     color: var(--color-text);
   }
@@ -84,13 +129,17 @@ body {
 
   /* Cards */
   .card {
-    @apply bg-white rounded-lg shadow-sm;
+    @apply rounded-lg shadow-sm;
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
+    color: var(--color-text);
   }
 
   /* Inputs — for future forms, kept to the same rule as buttons/cards */
   .input {
-    @apply w-full rounded-md bg-white px-4 text-body outline-none transition-colors;
+    @apply w-full rounded-md px-4 text-body outline-none transition-colors;
+    background: var(--color-surface);
+    color: var(--color-text);
     min-height: 52px;
     border: 1px solid var(--color-border);
   }
@@ -99,7 +148,9 @@ body {
 
   /* Selectable option row (quiz choices) */
   .option-row {
-    @apply w-full text-left rounded-md bg-white flex items-center gap-3 transition-all duration-150;
+    @apply w-full text-left rounded-md flex items-center gap-3 transition-all duration-150;
+    background: var(--color-surface);
+    color: var(--color-text);
     min-height: 52px;
     padding: 14px 16px;
     border: 1px solid var(--color-border);

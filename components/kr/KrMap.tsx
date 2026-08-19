@@ -10,8 +10,13 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { geoMercator } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 
-const ACCENT = "#34D399";
-const DISABLED_FILL = "rgba(255,255,255,0.05)";
+// react-simple-maps' `style` prop takes literal inline CSS, not Tailwind
+// classes — these still resolve through the shared theme tokens
+// (app/globals.css's `.kr-theme`) via CSS custom properties instead of
+// hardcoding hex.
+const ACCENT = "var(--color-accent)";
+const ACCENT_PRESSED = "var(--color-accent-active)";
+const DISABLED_FILL = "var(--color-bg-subtle)";
 
 export type KrMapFeatureProps = { name: string; code: string };
 
@@ -65,7 +70,7 @@ export default function KrMap({
                     style={{
                       default: {
                         fill: disabled ? DISABLED_FILL : getFill(id),
-                        stroke: "#050607",
+                        stroke: "var(--color-bg)",
                         strokeWidth: 0.75,
                         outline: "none",
                         cursor: disabled ? "not-allowed" : "pointer",
@@ -76,25 +81,25 @@ export default function KrMap({
                       hover: disabled
                         ? {
                             fill: DISABLED_FILL,
-                            stroke: "#050607",
+                            stroke: "var(--color-bg)",
                             strokeWidth: 0.75,
                             outline: "none",
                             cursor: "not-allowed",
                           }
                         : {
                             fill: ACCENT,
-                            stroke: "#050607",
+                            stroke: "var(--color-bg)",
                             strokeWidth: 1,
                             outline: "none",
                             cursor: "pointer",
-                            filter: `drop-shadow(0 0 10px ${ACCENT}) drop-shadow(0 0 22px rgba(52,211,153,0.55))`,
+                            filter: `drop-shadow(0 0 10px ${ACCENT}) drop-shadow(0 0 22px color-mix(in srgb, ${ACCENT} 55%, transparent))`,
                             transform: "scale(1.035)",
                             transformBox: "fill-box",
                             transformOrigin: "center",
                           },
                       pressed: {
-                        fill: disabled ? DISABLED_FILL : "#10B981",
-                        stroke: "#050607",
+                        fill: disabled ? DISABLED_FILL : ACCENT_PRESSED,
+                        stroke: "var(--color-bg)",
                         strokeWidth: 1,
                         outline: "none",
                         transformBox: "fill-box",
@@ -116,11 +121,15 @@ export default function KrMap({
                     y={centroid[1]}
                     textAnchor="middle"
                     dominantBaseline="middle"
+                    // Inline SVG <text> can't take Tailwind classes, and a
+                    // 9px map label is well below `caption` by necessity —
+                    // there's no room for anything bigger on a 시/도-sized
+                    // polygon (see tailwind.config.ts's fontSize comment).
                     style={{
                       fontSize: 9,
                       fontWeight: 700,
-                      fill: disabled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.85)",
-                      stroke: "rgba(5,6,7,0.65)",
+                      fill: disabled ? "var(--color-text-tertiary)" : "var(--color-text)",
+                      stroke: "color-mix(in srgb, var(--color-bg) 65%, transparent)",
                       strokeWidth: 2,
                       paintOrder: "stroke",
                       pointerEvents: "none",
@@ -137,8 +146,8 @@ export default function KrMap({
 
       {hovered && (
         <div
-          className="pointer-events-none fixed z-50 whitespace-nowrap rounded-md px-3 py-1.5 text-[13px] font-semibold text-white shadow-lg"
-          style={{ left: hovered.x + 14, top: hovered.y + 14, background: "rgba(5,6,7,0.95)", border: `1px solid ${ACCENT}` }}
+          className="pointer-events-none fixed z-50 whitespace-nowrap rounded-md px-3 py-1.5 text-caption font-semibold text-text shadow-lg"
+          style={{ left: hovered.x + 14, top: hovered.y + 14, background: "color-mix(in srgb, var(--color-bg) 95%, transparent)", border: `1px solid ${ACCENT}` }}
         >
           {getLabel(hovered.id)}
         </div>

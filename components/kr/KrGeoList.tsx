@@ -48,11 +48,11 @@ export default function KrGeoList({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={searchPlaceholder}
-        className="mb-2 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2.5 text-[14px] text-white outline-none transition-colors focus:border-[#34D399] focus:bg-white/[0.09]"
+        className="input mb-2"
       />
-      <div className="overflow-y-auto rounded-lg border border-white/10 bg-white/[0.02]" style={{ maxHeight }}>
+      <div className="overflow-y-auto rounded-lg border border-border bg-surface" style={{ maxHeight }}>
         {filtered.length === 0 ? (
-          <p className="px-3 py-6 text-center text-[13px] text-white/40">{emptyText}</p>
+          <p className="px-3 py-6 text-center text-caption text-text-tertiary">{emptyText}</p>
         ) : (
           filtered.map((item) => (
             <button
@@ -60,21 +60,23 @@ export default function KrGeoList({
               type="button"
               disabled={item.disabled}
               onClick={() => onSelect(item.id)}
-              className={`flex w-full items-center justify-between gap-3 border-b border-white/[0.05] px-3 py-2.5 text-left text-[13px] transition-colors last:border-0 ${
+              className={`touch-target flex w-full items-center justify-between gap-3 border-b border-border px-3 text-left text-caption transition-colors last:border-0 ${
                 item.disabled
-                  ? "cursor-not-allowed text-white/30"
-                  : `hover:bg-white/[0.06] hover:text-white ${item.id === selectedId ? "bg-[#34D399]/[0.10] text-white" : "text-white/80"}`
+                  ? "cursor-not-allowed text-text-tertiary"
+                  : `hover:bg-bg-subtle hover:text-text ${item.id === selectedId ? "bg-accent-tint text-text" : "text-text-secondary"}`
               }`}
             >
               <span className="flex min-w-0 items-center gap-1.5">
                 <span className="truncate">{item.name}</span>
                 {item.badge && !item.disabled && (
-                  <span className="shrink-0 rounded-full border border-[#34D399]/30 bg-[#34D399]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#34D399]">
+                  // Small pill next to a list row — same micro-label
+                  // exception as KrInputPanel.tsx's ComingSoonBadge.
+                  <span className="shrink-0 rounded-full border border-accent/30 bg-accent-tint px-1.5 py-0.5 text-[10px] font-bold text-accent">
                     {item.badge}
                   </span>
                 )}
               </span>
-              {item.sub && <span className="flex-shrink-0 tabular-nums text-white/40">{item.sub}</span>}
+              {item.sub && <span className="flex-shrink-0 tabular-nums text-text-tertiary">{item.sub}</span>}
             </button>
           ))
         )}

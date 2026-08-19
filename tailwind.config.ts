@@ -20,6 +20,10 @@ const config: Config = {
         ],
       },
       // Type scale — 4 steps only. Use these instead of ad-hoc text-xl/text-2xl/etc.
+      // The one accepted exception is all-caps micro-labels (eyebrow field
+      // labels, small pill badges) and inline SVG <text> (which can't take
+      // Tailwind classes at all) — those may go below `caption`, each with a
+      // comment at the call site explaining why.
       fontSize: {
         display: ["28px", { lineHeight: "1.25", fontWeight: "700", letterSpacing: "-0.01em" }],
         title: ["18px", { lineHeight: "1.4", fontWeight: "600" }],
@@ -40,6 +44,15 @@ const config: Config = {
         "accent-active": "var(--color-accent-active)",
         "accent-tint": "var(--color-accent-tint)",
         "accent-line": "var(--color-accent-line)",
+        "on-accent": "var(--color-on-accent)",
+        // Secondary "headline number" accent — used for the ratio/percentile
+        // hero numbers and gold-tier badges. Neutral amber on the light
+        // theme; /kr's .kr-theme override (globals.css) turns it into the
+        // brighter gold that matches its accent green.
+        warn: "var(--color-warn)",
+        "warn-tint": "var(--color-warn-tint)",
+        "warn-line": "var(--color-warn-line)",
+        overlay: "var(--color-overlay)",
         danger: "var(--color-danger)",
       },
       borderRadius: {

@@ -18,16 +18,17 @@ const HEADER_HEIGHT = 56;
 
 export { readKrInputFromSearch };
 
+// All-caps eyebrow micro-label — one of the few spots allowed below
+// `caption` (tailwind.config.ts's fontSize comment): at full caption size
+// these read as competing body text rather than a label.
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-white/40">{children}</label>;
+  return <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-text-tertiary">{children}</label>;
 }
 
-const fieldClass =
-  "w-full rounded-lg bg-white/[0.06] px-3 py-2.5 text-[14px] font-semibold text-white outline-none transition-colors border border-white/10 focus:border-[#34D399] focus:bg-white/[0.09]";
-
 function ComingSoonBadge({ label }: { label: string }) {
+  // Same micro-label exception as FieldLabel — a badge pill, not body copy.
   return (
-    <span className="rounded-full border border-white/10 bg-white/[0.06] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white/35">
+    <span className="rounded-full border border-border bg-bg-subtle px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-text-tertiary">
       {label}
     </span>
   );
@@ -45,7 +46,7 @@ function DisabledPillGroup({ label, options, badge }: { label: string; options: 
           <span
             key={o}
             aria-disabled
-            className="cursor-not-allowed rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[13px] font-semibold text-white/30"
+            className="cursor-not-allowed rounded-full border border-border bg-surface px-3 py-1.5 text-caption font-semibold text-text-tertiary"
           >
             {o}
           </span>
@@ -125,9 +126,9 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
           value={text}
           onChange={handleChange}
           onBlur={handleBlur}
-          className={fieldClass}
+          className="input font-semibold tabular-nums"
         />
-        <span className="text-[14px] font-semibold text-white/40">만원</span>
+        <span className="text-body font-semibold text-text-tertiary">만원</span>
       </div>
     </div>
   );
@@ -154,23 +155,22 @@ export default function KrInputPanel() {
   return (
     <>
       <div
-        className={`inset-x-0 top-0 z-40 border-b border-white/10 backdrop-blur-md ${expanded ? "relative" : "fixed"}`}
-        style={{ background: "rgba(10,11,13,0.85)" }}
+        className={`inset-x-0 top-0 z-40 border-b border-border bg-overlay backdrop-blur-md ${expanded ? "relative" : "fixed"}`}
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 sm:px-6" style={{ height: HEADER_HEIGHT }}>
           <div className="flex min-w-0 items-center gap-2.5">
             <Link
               href={homeHref}
               aria-label={t.home}
-              className="flex shrink-0 items-center justify-center rounded-full p-1.5 text-white/50 transition-colors hover:bg-white/[0.08] hover:text-[#34D399]"
+              className="touch-target flex shrink-0 items-center justify-center rounded-full px-1.5 text-text-secondary transition-colors hover:bg-bg-subtle hover:text-accent"
             >
               <Home className="h-4 w-4" />
             </Link>
             <Link href={homeHref} className="group flex min-w-0 items-baseline gap-2">
-              <span className="truncate text-[14px] font-extrabold tracking-tight text-white transition-colors group-hover:text-[#34D399]">
+              <span className="truncate text-body font-extrabold tracking-tight text-text transition-colors group-hover:text-accent">
                 {t.krAppTitle}
               </span>
-              <span className="hidden truncate text-[12px] text-white/40 sm:inline">{t.krMastheadTagline}</span>
+              <span className="hidden truncate text-caption text-text-tertiary sm:inline">{t.krMastheadTagline}</span>
             </Link>
           </div>
 
@@ -179,7 +179,7 @@ export default function KrInputPanel() {
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
             aria-label={expanded ? "Collapse input panel" : "Expand input panel"}
-            className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[12px] font-semibold text-white/70 transition-colors hover:border-[#34D399]/40 hover:text-white"
+            className="touch-target flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg-subtle px-3 text-caption font-semibold text-text-secondary transition-colors hover:border-accent/40 hover:text-text"
           >
             <span data-testid="kr-income-summary" className="max-w-[140px] truncate sm:max-w-[280px]">{summary}</span>
             <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} />
@@ -188,11 +188,11 @@ export default function KrInputPanel() {
 
         {expanded && (
           <div className="mx-auto max-w-5xl px-4 pb-5 sm:px-6">
-            <div className="flex flex-col gap-5 border-t border-white/[0.06] pt-4">
-              <h2 className="text-[12px] font-bold uppercase tracking-wide text-[#34D399]">{t.krInputTitle}</h2>
+            <div className="flex flex-col gap-5 border-t border-border pt-4">
+              <h2 className="text-caption font-bold uppercase tracking-wide text-accent">{t.krInputTitle}</h2>
 
               <div>
-                <h3 className="mb-2.5 text-[12px] font-semibold text-white/50">{t.krGroupWho}</h3>
+                <h3 className="mb-2.5 text-caption font-semibold text-text-secondary">{t.krGroupWho}</h3>
                 <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
                   <DisabledPillGroup label={t.krFieldGender} options={["남성", "여성"]} badge={t.krComingSoonBadge} />
                   <DisabledPillGroup label={t.krFieldMarital} options={["미혼", "기혼"]} badge={t.krComingSoonBadge} />
@@ -202,11 +202,11 @@ export default function KrInputPanel() {
                     badge={t.krComingSoonBadge}
                   />
                 </div>
-                <p className="mt-2 text-[11px] text-white/35">{t.krDemographicComingSoonNote}</p>
+                <p className="mt-2 text-caption text-text-tertiary">{t.krDemographicComingSoonNote}</p>
               </div>
 
               <div>
-                <h3 className="mb-2.5 text-[12px] font-semibold text-white/50">{t.krGroupMoney}</h3>
+                <h3 className="mb-2.5 text-caption font-semibold text-text-secondary">{t.krGroupMoney}</h3>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <IncomeField
                     label={t.krFieldIncome}

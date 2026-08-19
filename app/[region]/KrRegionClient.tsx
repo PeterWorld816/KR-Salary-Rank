@@ -102,7 +102,7 @@ function KrRegionContent({
     // only one available 구/시 (e.g. 경기 이천시 today), guMin === guMax and
     // it would otherwise fall back to the same "no data" fill as every
     // disabled neighbor, hiding the one region that actually has data.
-    if (guMax <= guMin) return "#34D399";
+    if (guMax <= guMin) return "var(--color-accent)";
     return incomeFill(mean, guMin, guMax);
   }
 
@@ -118,36 +118,36 @@ function KrRegionContent({
       <KrResultCard presetSidoSlug={sido.slug} presetGuSlug={null} />
 
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
-        <Link href={qs ? `/?${qs}` : "/"} className="mb-6 inline-flex items-center gap-1 text-[13px] text-white/50 transition-colors hover:text-white/80">
+        <Link href={qs ? `/?${qs}` : "/"} className="mb-6 inline-flex items-center gap-1 text-caption text-text-secondary transition-colors hover:text-text">
           <ChevronLeft className="h-4 w-4" />
           {t.krBackToKrMap}
         </Link>
 
-        <h1 className="mb-2 text-[26px] font-extrabold tracking-tight text-balance">
+        <h1 className="mb-2 text-display text-balance">
           {formatTemplate(t.krRegionMapTitleTemplate, { region: sido.name })}
         </h1>
-        <p className="mb-6 max-w-xl text-[15px] text-white/55">{t.krRegionMapHint}</p>
+        <p className="mb-6 max-w-xl text-body text-text-secondary">{t.krRegionMapHint}</p>
 
-        <div className="mb-8 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4">
-          <p className="mb-1 text-[12px] text-white/45">{t.krMeanLabel}</p>
-          <p className="text-[20px] font-bold tabular-nums text-white">{formatManwon(income.mean)}</p>
+        <div className="mb-8 rounded-xl border border-border bg-surface px-5 py-4">
+          <p className="mb-1 text-caption text-text-secondary">{t.krMeanLabel}</p>
+          <p className="text-title tabular-nums text-text">{formatManwon(income.mean)}</p>
         </div>
 
         <Link
           href={resultHref()}
-          className="mb-8 inline-flex items-center gap-1.5 rounded-full bg-[#34D399] px-5 py-2.5 text-[14px] font-bold text-[#04120C] transition-opacity hover:opacity-90"
+          className="touch-target mb-8 inline-flex items-center gap-1.5 rounded-full bg-accent px-5 text-body font-bold text-on-accent transition-opacity hover:opacity-90"
         >
           {formatTemplate(t.krSeeRegionResultButtonTemplate, { region: sido.name })}
         </Link>
 
         {guItems.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center text-white/50">
-            <p className="mb-1 font-semibold text-white/70">{t.krNoGuDataTitle}</p>
-            <p className="text-[13px] text-white/45">{t.krNoGuDataDesc}</p>
+          <div className="rounded-2xl border border-border bg-surface p-10 text-center text-text-secondary">
+            <p className="mb-1 font-semibold text-text">{t.krNoGuDataTitle}</p>
+            <p className="text-caption text-text-secondary">{t.krNoGuDataDesc}</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-            <p className="mb-2 text-[13px] font-bold text-white/90">
+          <div className="rounded-2xl border border-border bg-surface p-4">
+            <p className="mb-2 text-caption font-bold text-text">
               {formatTemplate(t.krRegionMapTitleTemplate, { region: sido.name })}
             </p>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -177,8 +177,8 @@ function KrRegionContent({
           </div>
         )}
 
-        <div className="mt-8 rounded-lg bg-white/[0.03] px-4 py-3 text-center">
-          <p className="text-[12px] text-white/30">{t.krDisclaimer}</p>
+        <div className="mt-8 rounded-lg bg-surface px-4 py-3 text-center">
+          <p className="text-caption text-text-tertiary">{t.krDisclaimer}</p>
         </div>
 
         <Footer />
@@ -199,7 +199,7 @@ export default function KrRegionClient(props: {
       fallback={
         <KrShell>
           <div className="flex min-h-screen items-center justify-center">
-            <Spinner className="h-8 w-8 border-[3px] border-white/20 border-t-[#34D399]" />
+            <Spinner className="h-8 w-8 border-[3px] border-border-strong border-t-accent" />
           </div>
         </KrShell>
       }

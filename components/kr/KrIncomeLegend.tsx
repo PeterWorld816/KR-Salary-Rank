@@ -22,13 +22,16 @@ export default function KrIncomeLegend({ min, max }: { min: number; max: number 
         return (
           <div key={i} className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: band.color }} />
-            <span className="text-[10px] text-white/45">{rangeLabel}</span>
+            {/* Legend swatch labels are tight, repeated micro-copy next to a
+                small color chip — see tailwind.config.ts's fontSize comment
+                for why this stays below `caption`. */}
+            <span className="text-[10px] text-text-tertiary">{rangeLabel}</span>
           </div>
         );
       })}
       <div className="flex items-center gap-1.5">
-        <span className="h-2.5 w-2.5 shrink-0 rounded-sm border border-white/10" style={{ background: NO_DATA_FILL }} />
-        <span className="text-[10px] text-white/45">{t.krLegendNoData}</span>
+        <span className="h-2.5 w-2.5 shrink-0 rounded-sm border border-border" style={{ background: NO_DATA_FILL }} />
+        <span className="text-[10px] text-text-tertiary">{t.krLegendNoData}</span>
       </div>
     </div>
   );
