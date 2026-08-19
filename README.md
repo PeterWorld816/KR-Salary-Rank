@@ -83,6 +83,30 @@ http://localhost:3000 을 열면 바로 한국 홈 화면이 뜹니다.
 vercel
 ```
 
+## 의존성 보안
+
+`next`는 14.x 라인의 최신 patch(`14.2.35`)로 고정돼 있습니다 — 이 저장소가 겪던 critical
+CVE(및 postcss 취약점 일부)는 이 버전에서 해결됩니다. `d3-color`(react-simple-maps가
+내부적으로 쓰는 d3-zoom의 전이 의존성)는 `package.json`의 `overrides`로 3.1.0+에 고정해
+ReDoS 취약점(GHSA-36jr-mh4h-2g58)을 막았습니다 — 같은 3.x 라인 안의 minor 업데이트라
+호환성 문제가 없습니다.
+
+`npm audit`에 남아있는 나머지 항목은 **의도적으로 미해결 상태**입니다:
+
+- `next`/`postcss`의 남은 high 등급 취약점들은 Next.js **16.x**(메이저 업그레이드)에서만
+  고쳐집니다. Next 15/16은 React 19를 요구하므로, 이 업그레이드는 `react`/`react-dom`
+  메이저 업그레이드 + `react-simple-maps`/`d3-geo`와의 호환성 재검증이 함께 필요한 별도
+  작업입니다.
+- `eslint-config-next`/`@next/eslint-plugin-next`/`glob`도 `eslint-config-next@16.x`로
+  올려야 해결되는데, 이 버전은 ESLint 9 flat config를 전제로 해서 현재의 `eslint@^8` +
+  `.eslintrc` 구조를 함께 마이그레이션해야 합니다. (참고: 이 저장소는 `.eslintrc` 자체가
+  아직 커밋되어 있지 않아 `npm run lint`가 최초 설정 프롬프트를 띄웁니다 — 이번 보안
+  업데이트와는 무관한 기존 상태입니다.)
+
+두 항목 모두 배포 중인 프로덕션 코드가 아니라 빌드/개발 도구 체인에 걸친 메이저 업그레이드라
+별도 작업으로 분리했습니다. 진행하려면 `npm audit fix --force`가 적용할 변경 사항(Next 16 +
+React 19 + eslint-config-next 16)을 먼저 검토하세요.
+
 ## AdSense
 
 - `NEXT_PUBLIC_ADSENSE_CLIENT_ID` 환경변수 — 실제 광고가 로드되는 AdSense 퍼블리셔 ID
