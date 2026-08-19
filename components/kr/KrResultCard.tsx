@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { formatTemplate, translations } from "@/lib/i18n";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
+import KrRatioHeadline from "@/components/kr/KrRatioHeadline";
 import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import Spinner from "@/components/Spinner";
@@ -26,7 +27,6 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
 
   const rows = buildKrIncomeComparison(input.annualIncome, presetSidoSlug, presetGuSlug);
   const best = getMostSpecificKrComparison(rows);
-  const above = best.ratioPercent >= 100;
   // No region picked yet (home screen's first paint) — the card below is
   // still a real, honest number (전국 평균 대비 실측치), but nothing about it
   // is personalized yet, so it's flagged as a preview rather than presented
@@ -48,11 +48,7 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
           <div className="flex min-w-0 flex-col items-start gap-1">
             <TierBadge tier={getTier(best.estimatedTopPercent)} />
-            <div className="text-display leading-none text-warn">
-              {formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, {
-                percent: Math.abs(Math.round((best.ratioPercent - 100) * 10) / 10),
-              })}
-            </div>
+            <KrRatioHeadline ratioPercent={best.ratioPercent} />
             <p className="text-caption font-semibold text-text-secondary">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
           </div>
           <div className="shrink-0">

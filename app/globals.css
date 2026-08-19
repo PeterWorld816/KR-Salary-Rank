@@ -65,7 +65,10 @@
 
   --color-text: #FFFFFF;
   --color-text-secondary: rgba(255, 255, 255, 0.60);
-  --color-text-tertiary: rgba(255, 255, 255, 0.40);
+  /* 0.40 measured ~3.8:1 against this theme's backgrounds — below WCAG AA's
+     4.5:1 for normal text. 0.55 clears it with margin (~6.2:1) on both
+     --color-bg and the KrShell gradient's darkest stop. */
+  --color-text-tertiary: rgba(255, 255, 255, 0.55);
 
   --color-accent: #34D399;
   --color-accent-hover: #2BBF89;
@@ -189,6 +192,36 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .fade-up { animation: none; }
+}
+
+/* Gold-tier "achievement" treatment — lib/tier.ts's top 1-15% tiers
+   (TierBadge's `gold` color) get a soft persistent glow plus a one-shot
+   diagonal sparkle sweep on mount, so landing in a top tier reads as a small
+   reward rather than just another badge color. The glow is static (safe
+   under reduced motion); only the sweep is an animation, so only the sweep
+   gets disabled below. */
+.tier-gold-glow {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 12px 1px var(--color-warn-line);
+}
+.tier-gold-glow::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: goldSparkleSweep 1.8s ease-out 0.2s 1;
+}
+@keyframes goldSparkleSweep {
+  0% { left: -60%; opacity: 0; }
+  15% { opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tier-gold-glow::after { display: none; }
 }
 
 @keyframes shimmer {

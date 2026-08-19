@@ -15,6 +15,7 @@ import { buildKrIncomeComparison, getMostSpecificKrComparison, krRegionIncomeMet
 import { formatManwon } from "@/lib/krFormat";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
+import KrRatioHeadline from "@/components/kr/KrRatioHeadline";
 import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import KrShell from "@/components/kr/KrShell";
@@ -70,7 +71,6 @@ function KrResultDashboardContent() {
 
   const rows = buildKrIncomeComparison(input.annualIncome, sido.slug, gu && gu.parentSlug === sido.slug ? gu.slug : null);
   const best = getMostSpecificKrComparison(rows);
-  const above = best.ratioPercent >= 100;
   const backHref = "/" + (sp.toString() ? `?${sp.toString()}` : "");
   const downloadName = `income-rank-${sido.slug}${gu ? `-${gu.slug}` : ""}.png`;
 
@@ -89,11 +89,7 @@ function KrResultDashboardContent() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
           <div className="flex min-w-0 flex-col items-start gap-1">
             <TierBadge tier={getTier(best.estimatedTopPercent)} />
-            <div className="text-display leading-none text-warn">
-              {formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, {
-                percent: Math.abs(Math.round((best.ratioPercent - 100) * 10) / 10),
-              })}
-            </div>
+            <KrRatioHeadline ratioPercent={best.ratioPercent} />
             <p className="text-caption font-semibold text-text-secondary">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
           </div>
           <div className="shrink-0">

@@ -1,7 +1,10 @@
 import type { Tier } from "@/lib/tier";
 
 const COLOR_CLASSES: Record<Tier["color"], string> = {
-  gold: "border-warn-line bg-warn-tint text-warn",
+  // tier-gold-glow (globals.css) — top-tier badges get a glow + one-shot
+  // sparkle sweep so reaching one feels like a small reward, not just
+  // another badge color.
+  gold: "border-warn-line bg-warn-tint text-warn tier-gold-glow",
   mint: "border-accent-line bg-accent-tint text-accent",
 };
 

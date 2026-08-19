@@ -42,7 +42,9 @@ export default function DistributionChart({
   const height = CHART_VIEWBOX_H * scale;
   const accent = dark ? ACCENT_ON_DARK : ACCENT;
   const axisColor = dark ? "rgba(255,255,255,0.18)" : "#E5E7EB";
-  const labelColor = dark ? "rgba(255,255,255,0.4)" : "#9CA3AF";
+  // Matches globals.css's --color-text-tertiary (kr-theme) — 0.4 measured
+  // under WCAG AA's 4.5:1 text contrast against this theme's dark backgrounds.
+  const labelColor = dark ? "rgba(255,255,255,0.55)" : "#9CA3AF";
 
   const { linePath, areaPath } = buildDistributionPaths();
   const marker = markerPosition(monthlySalary, min, max);
