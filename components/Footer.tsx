@@ -12,13 +12,13 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-10 border-t border-white/10 pt-6">
+    <footer className="mt-10 border-t border-border pt-6">
       <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
         {links.map((l) => (
           <Link
             key={l.href}
             href={l.href}
-            className="text-[12px] text-white/40 transition-colors hover:text-white/70"
+            className="text-caption text-text-tertiary transition-colors hover:text-text-secondary"
           >
             {l.label}
           </Link>

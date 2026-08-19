@@ -15,7 +15,7 @@ export default function KrContactPage() {
     <LegalPage title="문의하기" backLabel="홈으로" backHref="/">
       <LegalSection heading="문의 방법">
         <p>계산 방식이 궁금하시거나, 사이트에 대한 의견, 데이터 오류 제보가 있으시면 아래 이메일로 연락해주세요:</p>
-        <a href={`mailto:${CONTACT_EMAIL}`} className="inline-block text-[15px] font-semibold text-[#34D399] hover:underline">
+        <a href={`mailto:${CONTACT_EMAIL}`} className="inline-block text-body font-semibold text-accent hover:underline">
           {CONTACT_EMAIL}
         </a>
       </LegalSection>

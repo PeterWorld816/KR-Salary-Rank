@@ -58,7 +58,7 @@ const SECTIONS: { heading: string; body: string[] }[] = [
 export default function KrPrivacyPage() {
   return (
     <LegalPage title="개인정보처리방침" backLabel="홈으로" backHref="/">
-      <p className="text-[12px] text-white/35">최종 수정일: 2026년 8월</p>
+      <p className="text-caption text-text-tertiary">최종 수정일: 2026년 8월</p>
       {SECTIONS.map((s) => (
         <LegalSection key={s.heading} heading={s.heading}>
           {s.body.map((p, i) => (

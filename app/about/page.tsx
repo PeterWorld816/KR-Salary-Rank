@@ -26,17 +26,17 @@ export default function KrAboutPage() {
         <p>이 사이트에 표시되는 지역 평균 소득은 아래 출처에서 담당자가 직접 확인한 실측값이며, 임의로 추정한 값이 아닙니다:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>
-            <span className="font-semibold text-white/85">국세청 국세통계 4.2.15 — 시군구별 근로소득 연말정산 신고현황 (2023년 귀속)</span>
+            <span className="font-semibold text-text-secondary">국세청 국세통계 4.2.15 — 시군구별 근로소득 연말정산 신고현황 (2023년 귀속)</span>
             <br />
-            <span className="text-white/55">tblId DT_133001N_4215, orgId 133, KOSIS(국가통계포털)에서 조회.</span>
+            <span className="text-text-tertiary">tblId DT_133001N_4215, orgId 133, KOSIS(국가통계포털)에서 조회.</span>
           </li>
           <li>
-            <span className="font-semibold text-white/85">국세청 2024.12 4차 국세통계 브리핑 보도자료</span>
+            <span className="font-semibold text-text-secondary">국세청 2024.12 4차 국세통계 브리핑 보도자료</span>
             <br />
-            <span className="text-white/55">시/도 단위 평균 중 일부 수치의 출처.</span>
+            <span className="text-text-tertiary">시/도 단위 평균 중 일부 수치의 출처.</span>
           </li>
         </ul>
-        <p className="text-white/55">
+        <p className="text-text-tertiary">
           기준 시점: {krRegionIncomeMeta.asOf}. 아직 수치를 확보하지 못한 지역(부산·대구·광주·강원·전북·제주 등)은
           &ldquo;준비중&rdquo;으로만 표시하고, 절대 추정치로 채우지 않습니다.
         </p>
@@ -57,7 +57,7 @@ export default function KrAboutPage() {
             href="https://github.com/southkorea/southkorea-maps"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#34D399] hover:underline"
+            className="text-accent hover:underline"
           >
             southkorea/southkorea-maps
           </a>{" "}

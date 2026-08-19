@@ -49,11 +49,13 @@
 }
 
 /* /kr dark theme — scoped override of the same --color-* tokens, applied by
-   components/kr/KrShell.tsx to every /kr page. The rest of the site (/us,
-   marketing pages) keeps the light palette above; /kr keeps its existing
-   dark/neon look, but now every components/kr/** file sources it from these
-   variables (or the tailwind.config.ts color/fontSize mappings) instead of
-   hardcoding hex values inline. */
+   components/kr/KrShell.tsx to every /kr page (including the legal/about/
+   contact pages, which render inside KrShell via components/LegalPage.tsx).
+   The rest of the site (/us, marketing pages) keeps the light palette above;
+   /kr keeps its existing dark/neon look, but every component and page that
+   renders under .kr-theme sources it from these variables (or the
+   tailwind.config.ts color/fontSize mappings) instead of hardcoding hex
+   values inline. */
 .kr-theme {
   --color-bg: #0B0C0E;
   --color-bg-subtle: rgba(255, 255, 255, 0.06);
