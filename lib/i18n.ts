@@ -253,6 +253,9 @@ export interface Translations {
   krGuDetailAvailableBadge: string;
   krNoGuDataTitle: string;
   krNoGuDataDesc: string;
+  krRequestDataCta: string;
+  krRequestDataMailSubjectTemplate: string; // template: {region}
+  krRequestDataMailBodyTemplate: string; // template: {region}
   krSeeRegionResultButtonTemplate: string; // template: {region}
   krResultMissingTitle: string;
   krResultMissingDesc: string;
@@ -496,6 +499,9 @@ export const translations: Record<LangCode, Translations> = {
     krGuDetailAvailableBadge: "시군구 상세 가능",
     krNoGuDataTitle: "이 시/도는 시군구 세부 데이터가 아직 없어요",
     krNoGuDataDesc: "시/도 전체 평균 기준으로는 결과를 볼 수 있어요.",
+    krRequestDataCta: "이 지역 데이터 요청하기",
+    krRequestDataMailSubjectTemplate: "{region} 시군구 데이터 요청",
+    krRequestDataMailBodyTemplate: "{region}의 시군구별 평균 소득 데이터를 추가해주세요. (아는 출처가 있다면 함께 적어주셔도 좋아요!)",
     krSeeRegionResultButtonTemplate: "{region} 평균 기준으로 결과 보기",
     krResultMissingTitle: "먼저 지도에서 지역을 선택해주세요",
     krResultMissingDesc: "결과를 보려면 시/도를 먼저 선택해야 해요 (시군구는 선택사항이에요).",

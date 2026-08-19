@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { absoluteUrl } from "@/lib/site-url";
 import { LegalPage, LegalSection } from "@/components/LegalPage";
-
-const CONTACT_EMAIL = "rmfrmfyoutube@gmail.com";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "문의하기 — 내 소득 상위 몇 %?",

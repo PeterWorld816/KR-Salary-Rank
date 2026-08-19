@@ -17,6 +17,7 @@ import type { SidoMeta, GuMeta } from "@/data/kr/regionMeta";
 import type { KrRegionIncome } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
 import { incomeFill } from "@/components/colorScale";
+import { buildMailto } from "@/lib/contact";
 
 function KrRegionContent({
   sido,
@@ -143,7 +144,16 @@ function KrRegionContent({
         {guItems.length === 0 ? (
           <div className="rounded-2xl border border-border bg-surface p-10 text-center text-text-secondary">
             <p className="mb-1 font-semibold text-text">{t.krNoGuDataTitle}</p>
-            <p className="text-caption text-text-secondary">{t.krNoGuDataDesc}</p>
+            <p className="mb-4 text-caption text-text-secondary">{t.krNoGuDataDesc}</p>
+            <a
+              href={buildMailto(
+                formatTemplate(t.krRequestDataMailSubjectTemplate, { region: sido.name }),
+                formatTemplate(t.krRequestDataMailBodyTemplate, { region: sido.name })
+              )}
+              className="btn btn-secondary"
+            >
+              {t.krRequestDataCta}
+            </a>
           </div>
         ) : (
           <div className="rounded-2xl border border-border bg-surface p-4">
