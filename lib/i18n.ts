@@ -245,6 +245,7 @@ export interface Translations {
   krListNoResults: string;
   krBackToKrMap: string;
   krPendingBadge: string;
+  krGuDetailAvailableBadge: string;
   krNoGuDataTitle: string;
   krNoGuDataDesc: string;
   krSeeRegionResultButtonTemplate: string; // template: {region}
@@ -484,6 +485,7 @@ export const translations: Record<LangCode, Translations> = {
     krListNoResults: "검색 결과가 없어요",
     krBackToKrMap: "시/도 지도로",
     krPendingBadge: "준비중",
+    krGuDetailAvailableBadge: "시군구 상세 가능",
     krNoGuDataTitle: "이 시/도는 시군구 세부 데이터가 아직 없어요",
     krNoGuDataDesc: "시/도 전체 평균 기준으로는 결과를 볼 수 있어요.",
     krSeeRegionResultButtonTemplate: "{region} 평균 기준으로 결과 보기",

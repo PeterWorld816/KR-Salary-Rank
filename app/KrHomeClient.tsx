@@ -11,7 +11,7 @@ import KrResultCard from "@/components/kr/KrResultCard";
 import Footer from "@/components/Footer";
 import Spinner from "@/components/Spinner";
 import { KR_SIDO } from "@/data/kr/regionMeta";
-import { getRegionIncomeByName, krRegionIncomeMeta } from "@/lib/krIncomeCalc";
+import { getRegionIncomeByName, getAvailableGusForSido, krRegionIncomeMeta } from "@/lib/krIncomeCalc";
 import { incomeFill } from "@/components/colorScale";
 import { formatManwon } from "@/lib/krFormat";
 
@@ -36,6 +36,16 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
 
   const disabledIds = useMemo(() => new Set(KR_SIDO.filter((s) => !s.available).map((s) => s.code)), []);
 
+  // 시/도 that have at least one 구/시 with a real income row — visiting these
+  // gets a clickable gu-level map instead of just the "시군구 세부 데이터가
+  // 아직 없어요" placeholder (see app/[region]/page.tsx). Surfaced up front
+  // (map hover label + list badge) so visitors aren't surprised after they
+  // click in — see README's "데이터 추가 가이드" for how this set grows.
+  const guDetailCodes = useMemo(
+    () => new Set(KR_SIDO.filter((s) => s.available && getAvailableGusForSido(s.slug).length > 0).map((s) => s.code)),
+    []
+  );
+
   function getHref(code: string) {
     const sido = KR_SIDO.find((s) => s.code === code);
     if (!sido || !sido.available) return "/";
@@ -47,7 +57,8 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
     if (!sido) return "";
     if (!sido.available) return `${sido.name} — ${t.krPendingBadge}`;
     const mean = meanByCode.get(code);
-    return mean != null ? `${sido.name} — ${formatManwon(mean)}` : sido.name;
+    const base = mean != null ? `${sido.name} — ${formatManwon(mean)}` : sido.name;
+    return guDetailCodes.has(code) ? `${base} · ${t.krGuDetailAvailableBadge}` : base;
   }
 
   function getFill(code: string) {
@@ -65,6 +76,7 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
     name: s.name,
     sub: s.available ? (meanByCode.get(s.code) != null ? formatManwon(meanByCode.get(s.code)!) : undefined) : t.krPendingBadge,
     disabled: !s.available,
+    badge: guDetailCodes.has(s.code) ? t.krGuDetailAvailableBadge : undefined,
   }));
 
   return (

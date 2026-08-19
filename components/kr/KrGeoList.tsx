@@ -9,6 +9,9 @@ export type KrGeoListItem = {
   name: string;
   sub?: string;
   disabled?: boolean;
+  // Small pill shown next to the name, e.g. "시군구 상세 가능" — see
+  // app/KrHomeClient.tsx's sidoItems for the 시/도 list's usage.
+  badge?: string;
 };
 
 export default function KrGeoList({
@@ -63,7 +66,14 @@ export default function KrGeoList({
                   : `hover:bg-white/[0.06] hover:text-white ${item.id === selectedId ? "bg-[#34D399]/[0.10] text-white" : "text-white/80"}`
               }`}
             >
-              <span className="truncate">{item.name}</span>
+              <span className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate">{item.name}</span>
+                {item.badge && !item.disabled && (
+                  <span className="shrink-0 rounded-full border border-[#34D399]/30 bg-[#34D399]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#34D399]">
+                    {item.badge}
+                  </span>
+                )}
+              </span>
               {item.sub && <span className="flex-shrink-0 tabular-nums text-white/40">{item.sub}</span>}
             </button>
           ))
