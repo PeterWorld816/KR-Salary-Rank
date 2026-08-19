@@ -5,7 +5,7 @@
 // log-normal percentile estimate, compared at up to three levels (national /
 // 시·도 / 시군구). No age-band, net-worth, or 401(k) sections — there's no KR
 // data behind any of those yet.
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
@@ -18,6 +18,13 @@ import TierBadge from "@/components/TierBadge";
 import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import KrShell from "@/components/kr/KrShell";
+import KrShareCard, {
+  KR_SHARE_CARD_WIDTH,
+  KR_SHARE_CARD_HEIGHT,
+  KR_STORY_CARD_WIDTH,
+  KR_STORY_CARD_HEIGHT,
+} from "@/components/kr/KrShareCard";
+import ShareButtons from "@/components/ShareButtons";
 import Footer from "@/components/Footer";
 import Spinner from "@/components/Spinner";
 
@@ -36,6 +43,8 @@ function KrResultDashboardContent() {
   const input = readKrInputFromSearch(sp);
   const sidoSlug = sp.get("region");
   const guSlug = sp.get("gu");
+  const shareCardRef = useRef<HTMLDivElement>(null);
+  const storyCardRef = useRef<HTMLDivElement>(null);
 
   const sido = sidoSlug ? getSidoBySlug(sidoSlug) : null;
   const gu = guSlug ? getGuBySlug(guSlug) : null;
@@ -63,6 +72,7 @@ function KrResultDashboardContent() {
   const best = getMostSpecificKrComparison(rows);
   const above = best.ratioPercent >= 100;
   const backHref = "/" + (sp.toString() ? `?${sp.toString()}` : "");
+  const downloadName = `income-rank-${sido.slug}${gu ? `-${gu.slug}` : ""}.png`;
 
   return (
     <KrShell>
@@ -96,6 +106,39 @@ function KrResultDashboardContent() {
             {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} · {t.krEstimatedPercentileLabel}
           </p>
           <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
+        </div>
+
+        <KrShareCard
+          cardRef={shareCardRef}
+          variant="wide"
+          regionName={best.name}
+          monthlySalary={input.annualIncome}
+          averageValue={best.mean}
+          ratioPercent={best.ratioPercent}
+          estimatedTopPercent={best.estimatedTopPercent}
+        />
+        <KrShareCard
+          cardRef={storyCardRef}
+          variant="story"
+          regionName={best.name}
+          monthlySalary={input.annualIncome}
+          averageValue={best.mean}
+          ratioPercent={best.ratioPercent}
+          estimatedTopPercent={best.estimatedTopPercent}
+        />
+        <div className="mb-8">
+          <ShareButtons
+            cardRef={shareCardRef}
+            shareTitle={t.krAppTitle}
+            shareText={formatTemplate(t.krShareTextTemplate, { region: best.name, percent: best.estimatedTopPercent })}
+            downloadName={downloadName}
+            width={KR_SHARE_CARD_WIDTH}
+            height={KR_SHARE_CARD_HEIGHT}
+            storyCardRef={storyCardRef}
+            storyWidth={KR_STORY_CARD_WIDTH}
+            storyHeight={KR_STORY_CARD_HEIGHT}
+            enableKakao
+          />
         </div>
 
         <h2 className="mb-3 text-title text-text">{t.krCompareChartTitle}</h2>

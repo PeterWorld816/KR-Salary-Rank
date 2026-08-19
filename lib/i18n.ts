@@ -32,6 +32,11 @@ export interface Translations {
   shareFailed: string;
   saveFailed: string;
   usDismiss: string;
+  // ── Kakao share fallback (components/ShareButtons.tsx) — no Kakao JS SDK
+  // key configured, so this copies text+link to the clipboard instead of
+  // opening KakaoTalk's share sheet directly. See README's "공유 기능" section.
+  shareKakao: string;
+  shareKakaoCopied: string;
 
   // ── Footer (components/us/Footer.tsx)
   footerAbout: string;
@@ -269,6 +274,7 @@ export interface Translations {
   krDetailsToggleHide: string;
   krResultDashboardIntro: string;
   krDashboardIncomeSectionTitle: string;
+  krShareTextTemplate: string; // template: {region}, {percent} — ShareButtons' shareText on /result
 }
 
 export const translations: Record<LangCode, Translations> = {
@@ -289,6 +295,8 @@ export const translations: Record<LangCode, Translations> = {
     shareFailed: "공유 실패",
     saveFailed: "저장 실패. 다시 시도해주세요.",
     usDismiss: "닫기",
+    shareKakao: "카카오톡 공유",
+    shareKakaoCopied: "공유 문구가 복사됐어요! 카카오톡을 열어 붙여넣기 해주세요.",
 
     footerAbout: "사이트 소개",
     footerPrivacy: "개인정보처리방침",
@@ -509,5 +517,6 @@ export const translations: Record<LangCode, Translations> = {
     krDetailsToggleHide: "전체 내역 접기",
     krResultDashboardIntro: "전국·시/도·시군구 평균과 비교한 내 소득 위치를 한 화면에서 확인하세요.",
     krDashboardIncomeSectionTitle: "소득 비교",
+    krShareTextTemplate: "나는 {region} 소득 상위 {percent}%예요. 당신은 몇 %?",
   },
 };

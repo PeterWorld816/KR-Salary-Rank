@@ -65,7 +65,9 @@ lib/
   i18n.ts                            # 한국어 카피
 components/kr/
   KrMap.tsx / KrGeoList.tsx / KrInputPanel.tsx / KrResultCard.tsx
-  KrResultDashboard.tsx / KrShell.tsx / KrIncomeLegend.tsx
+  KrResultDashboard.tsx / KrShell.tsx / KrIncomeLegend.tsx / KrShareCard.tsx
+components/
+  ShareButtons.tsx                    # Web Share / 이미지 저장 / 카카오톡 공유
 ```
 
 ## 로컬 개발
@@ -106,6 +108,24 @@ ReDoS 취약점(GHSA-36jr-mh4h-2g58)을 막았습니다 — 같은 3.x 라인 �
 두 항목 모두 배포 중인 프로덕션 코드가 아니라 빌드/개발 도구 체인에 걸친 메이저 업그레이드라
 별도 작업으로 분리했습니다. 진행하려면 `npm audit fix --force`가 적용할 변경 사항(Next 16 +
 React 19 + eslint-config-next 16)을 먼저 검토하세요.
+
+## 공유 기능
+
+`/result`의 결과 카드는 `components/kr/KrShareCard.tsx`(고정 픽셀 크기의 오프스크린
+카드 두 종 — 와이드/스토리 9:16)와 `components/ShareButtons.tsx`(Web Share API 공유,
+`html-to-image`로 카드/스토리 PNG 저장, 카카오톡 공유)로 구성됩니다.
+
+**카카오톡 공유는 아직 클립보드 복사 폴백입니다.** 카카오 JS SDK로 KakaoTalk 공유 시트를
+직접 여는 "카카오톡 공유하기" 버튼(`Kakao.Link.sendDefault`)을 붙이려면:
+
+1. [Kakao Developers](https://developers.kakao.com)에서 앱을 등록하고 **JavaScript 키**를 발급받습니다.
+2. 앱 설정의 **플랫폼 → Web**에 배포 도메인(`NEXT_PUBLIC_SITE_URL`과 동일)을 등록합니다.
+3. 발급받은 JS 키를 `NEXT_PUBLIC_KAKAO_JS_KEY` 같은 환경변수로 넣고, Kakao SDK 스크립트를
+   로드한 뒤 `components/ShareButtons.tsx`의 `handleKakaoShare`를 `Kakao.Link.sendDefault(...)`
+   호출로 교체합니다.
+
+키 발급 전까지는 공유 문구 + 링크를 클립보드에 복사하고 "카카오톡에서 붙여넣기"로
+안내하는 현재 방식을 유지합니다.
 
 ## AdSense
 
