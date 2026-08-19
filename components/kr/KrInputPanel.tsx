@@ -66,11 +66,21 @@ function formatDigits(digits: string): string {
 function IncomeField({ label, value, onCommit }: { label: string; value: number; onCommit: (v: number) => void }) {
   const [text, setText] = useState(() => formatDigits(String(Math.round(value))));
 
+  // Commits on every keystroke (not just onBlur) so `form` state/the URL's
+  // `?d=` always match what's on screen. This used to commit only on blur,
+  // which raced with map/list clicks: clicking a region blurs the input and
+  // navigates in the same event tick, so the click's handler could read the
+  // pre-commit URL before React ever applied the blur's state update. See
+  // app/KrHomeClient.tsx's handleSelect / app/[region]/KrRegionClient.tsx's
+  // handleSelectGu, which build their destination URL from the current
+  // search params — committing immediately means those params are already
+  // current by the time any click can happen.
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const input = e.target;
     const caret = input.selectionStart ?? input.value.length;
     const digitsBeforeCaret = digitsOf(input.value.slice(0, caret)).length;
-    const formatted = formatDigits(digitsOf(input.value));
+    const digits = digitsOf(input.value);
+    const formatted = formatDigits(digits);
 
     input.value = formatted;
     let newCaret = formatted.length;
@@ -88,13 +98,19 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
     }
     input.setSelectionRange(newCaret, newCaret);
     setText(formatted);
+
+    const n = Number(digits);
+    if (digits !== "" && Number.isFinite(n) && n > 0) {
+      onCommit(n);
+    }
   }
 
+  // Only handles the "left the field empty" cleanup now — real commits
+  // already happened in handleChange above.
   function handleBlur() {
     const digits = digitsOf(text);
     const n = Number(digits);
     const committed = digits !== "" && Number.isFinite(n) && n > 0 ? n : value;
-    onCommit(committed);
     setText(formatDigits(String(committed)));
   }
 
@@ -105,6 +121,7 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
         <input
           type="text"
           inputMode="numeric"
+          data-testid="kr-income-input"
           value={text}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -164,7 +181,7 @@ export default function KrInputPanel() {
             aria-label={expanded ? "Collapse input panel" : "Expand input panel"}
             className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[12px] font-semibold text-white/70 transition-colors hover:border-[#34D399]/40 hover:text-white"
           >
-            <span className="max-w-[140px] truncate sm:max-w-[280px]">{summary}</span>
+            <span data-testid="kr-income-summary" className="max-w-[140px] truncate sm:max-w-[280px]">{summary}</span>
             <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </button>
         </div>
