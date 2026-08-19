@@ -1,9 +1,12 @@
-// Maps a "top N%" number (the same lower-is-better percentile already shown
-// across /us — see lib/usIncomeCalc.ts) to a gamified tier badge. Used for
-// both income and net worth percentiles, which share the same buckets. Pure
-// function, no React — safe to reuse in the result page and the share card
-// (components/us/UsShareCardWide.tsx/UsShareCardStory.tsx render it with inline styles instead of
-// Tailwind classes).
+// Maps a "top N%" number (the same lower-is-better percentile used across
+// income/net-worth results) to a gamified tier badge. Pure function, no
+// React — safe to reuse in the result page and any future share card.
+//
+// This site is Korea-only now (no /us route — see git history's "Consolidate
+// site to Korea-only, drop /kr prefix"), so these labels are plain Korean
+// rather than a lang-keyed map. If an English-language section is ever
+// reintroduced, split TIER_LEVELS/FALLBACK_TIER into a Record<LangCode, ...>
+// (lib/i18n.ts's LangCode) instead of hardcoding Korean here.
 
 export type TierColor = "gold" | "mint";
 
@@ -14,15 +17,15 @@ export type Tier = {
 };
 
 const TIER_LEVELS: { max: number; emoji: string; label: string; color: TierColor }[] = [
-  { max: 1, emoji: "🏆", label: "Elite Earner", color: "gold" },
-  { max: 5, emoji: "💎", label: "High Roller", color: "gold" },
-  { max: 15, emoji: "🚀", label: "Fast Climber", color: "gold" },
-  { max: 35, emoji: "📈", label: "On the Rise", color: "mint" },
-  { max: 60, emoji: "🌱", label: "Steady Grower", color: "mint" },
-  { max: 85, emoji: "🔧", label: "Building Up", color: "mint" },
+  { max: 1, emoji: "🏆", label: "정상급 소득자", color: "gold" },
+  { max: 5, emoji: "💎", label: "상위권 리더", color: "gold" },
+  { max: 15, emoji: "🚀", label: "고속 성장 중", color: "gold" },
+  { max: 35, emoji: "📈", label: "쭉쭉 오르는 중", color: "mint" },
+  { max: 60, emoji: "🌱", label: "꾸준히 크는 중", color: "mint" },
+  { max: 85, emoji: "🔧", label: "기반 다지는 중", color: "mint" },
 ];
 
-const FALLBACK_TIER: Tier = { emoji: "🌟", label: "Just Getting Started", color: "mint" };
+const FALLBACK_TIER: Tier = { emoji: "🌟", label: "이제 시작이에요", color: "mint" };
 
 export function getTier(topPercent: number): Tier {
   const level = TIER_LEVELS.find((l) => topPercent <= l.max);
