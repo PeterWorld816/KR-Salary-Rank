@@ -85,7 +85,8 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
 
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
         <h1 className="mb-2 text-display text-balance">{t.krAppTitle}</h1>
-        <p className="mb-8 max-w-xl text-body text-text-secondary">{t.krTagline}</p>
+        <p className="mb-2 max-w-xl text-body text-text-secondary">{t.krTagline}</p>
+        <p className="mb-8 text-caption font-semibold text-text-tertiary">{t.krOnboardingStepsLine}</p>
 
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-title text-text">{t.krMapTitle}</h2>

@@ -239,6 +239,11 @@ export interface Translations {
   krFieldIncome: string;
   krComingSoonBadge: string;
   krDemographicComingSoonNote: string;
+  krDemographicToggleShow: string;
+  krDemographicToggleHide: string;
+  krOnboardingStepsLine: string;
+  krResultPreviewBadge: string;
+  krResultPreviewHint: string;
   krApply: string;
   krMapTitle: string;
   krMapHint: string;
@@ -485,6 +490,11 @@ export const translations: Record<LangCode, Translations> = {
     krFieldIncome: "세전 연 소득 (만원)",
     krComingSoonBadge: "준비중",
     krDemographicComingSoonNote: "성별·결혼상태·연령대별 지역 데이터는 아직 없어서, 지금은 지역 평균 대비 비교만 제공해요.",
+    krDemographicToggleShow: "더 보기",
+    krDemographicToggleHide: "접기",
+    krOnboardingStepsLine: "① 소득 입력 → ② 지도에서 지역 선택 → ③ 결과 확인",
+    krResultPreviewBadge: "예시",
+    krResultPreviewHint: "아직 지역을 선택하지 않았어요 — 지도에서 지역을 고르면 결과가 바로 바뀌어요.",
     krApply: "적용하고 지도 보기",
     krMapTitle: "시/도를 선택하세요",
     krMapHint: "지도나 목록에서 시/도를 선택하면 시군구별 목록으로 이동해요",

@@ -27,11 +27,24 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
   const rows = buildKrIncomeComparison(input.annualIncome, presetSidoSlug, presetGuSlug);
   const best = getMostSpecificKrComparison(rows);
   const above = best.ratioPercent >= 100;
+  // No region picked yet (home screen's first paint) — the card below is
+  // still a real, honest number (전국 평균 대비 실측치), but nothing about it
+  // is personalized yet, so it's flagged as a preview rather than presented
+  // as a finished result.
+  const isPreview = !presetSidoSlug;
 
   return (
     <>
       <KrInputPanel />
       <div className="mx-auto max-w-2xl px-6 pt-8">
+        {isPreview && (
+          <div className="mb-2 flex items-center gap-1.5">
+            <span className="rounded-full border border-border bg-bg-subtle px-2 py-0.5 text-caption font-bold uppercase tracking-wide text-text-tertiary">
+              {t.krResultPreviewBadge}
+            </span>
+            <p className="text-caption text-text-tertiary">{t.krResultPreviewHint}</p>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
           <div className="flex min-w-0 flex-col items-start gap-1">
             <TierBadge tier={getTier(best.estimatedTopPercent)} />

@@ -141,6 +141,10 @@ export default function KrInputPanel() {
   const sp = useSearchParams();
   const [form, setForm] = useState<KrInput>(() => readKrInputFromSearch(sp));
   const [expanded, setExpanded] = useState(() => !sp.get("d"));
+  // Collapsed by default — these three fields are all "준비중" (no data
+  // behind them yet), so leading with them above the one field that actually
+  // does something pushed the real income input below the fold on mobile.
+  const [showDemographics, setShowDemographics] = useState(false);
 
   function apply(next: KrInput) {
     setForm(next);
@@ -192,20 +196,6 @@ export default function KrInputPanel() {
               <h2 className="text-caption font-bold uppercase tracking-wide text-accent">{t.krInputTitle}</h2>
 
               <div>
-                <h3 className="mb-2.5 text-caption font-semibold text-text-secondary">{t.krGroupWho}</h3>
-                <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
-                  <DisabledPillGroup label={t.krFieldGender} options={["남성", "여성"]} badge={t.krComingSoonBadge} />
-                  <DisabledPillGroup label={t.krFieldMarital} options={["미혼", "기혼"]} badge={t.krComingSoonBadge} />
-                  <DisabledPillGroup
-                    label={t.krFieldAgeBand}
-                    options={["20대", "30대", "40대", "50대+"]}
-                    badge={t.krComingSoonBadge}
-                  />
-                </div>
-                <p className="mt-2 text-caption text-text-tertiary">{t.krDemographicComingSoonNote}</p>
-              </div>
-
-              <div>
                 <h3 className="mb-2.5 text-caption font-semibold text-text-secondary">{t.krGroupMoney}</h3>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   <IncomeField
@@ -214,6 +204,34 @@ export default function KrInputPanel() {
                     onCommit={(v) => apply({ ...form, annualIncome: v })}
                   />
                 </div>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowDemographics((v) => !v)}
+                  aria-expanded={showDemographics}
+                  className="flex items-center gap-1.5 text-caption font-semibold text-text-secondary transition-colors hover:text-text"
+                >
+                  {t.krGroupWho}
+                  <ComingSoonBadge label={t.krComingSoonBadge} />
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showDemographics ? "rotate-180" : ""}`} />
+                  <span className="text-text-tertiary">{showDemographics ? t.krDemographicToggleHide : t.krDemographicToggleShow}</span>
+                </button>
+                {showDemographics && (
+                  <>
+                    <div className="mt-2.5 flex flex-col gap-3 sm:flex-row sm:gap-6">
+                      <DisabledPillGroup label={t.krFieldGender} options={["남성", "여성"]} badge={t.krComingSoonBadge} />
+                      <DisabledPillGroup label={t.krFieldMarital} options={["미혼", "기혼"]} badge={t.krComingSoonBadge} />
+                      <DisabledPillGroup
+                        label={t.krFieldAgeBand}
+                        options={["20대", "30대", "40대", "50대+"]}
+                        badge={t.krComingSoonBadge}
+                      />
+                    </div>
+                    <p className="mt-2 text-caption text-text-tertiary">{t.krDemographicComingSoonNote}</p>
+                  </>
+                )}
               </div>
             </div>
           </div>
