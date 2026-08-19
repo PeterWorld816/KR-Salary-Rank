@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { KR_SIDO, getSidoBySlug } from "@/data/kr/regionMeta";
 import { getAvailableGusForSido, getPendingGusForSido, getRegionIncomeByName } from "@/lib/krIncomeCalc";
+import { getKrGuGeoForSido } from "@/lib/krGeo";
 import { formatManwon } from "@/lib/krFormat";
 import { formatTemplate, translations } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site-url";
@@ -42,6 +43,11 @@ export default function KrRegionPage({ params }: { params: Params }) {
   const income = getRegionIncomeByName(sido.name)!;
   const availableGus = getAvailableGusForSido(sido.slug);
   const pendingGus = getPendingGusForSido(sido.slug);
+  // Only worth shipping the gu-level polygons when this 시도 actually has at
+  // least one named 구/시 to show (available or pending) — most 시도 have no
+  // KR_GU rows at all yet (see regionMeta.ts's meta.note) and would just get
+  // an inert, unclickable map.
+  const guGeo = availableGus.length + pendingGus.length > 0 ? getKrGuGeoForSido(sido.code) : null;
 
-  return <KrRegionClient sido={sido} income={income} availableGus={availableGus} pendingGus={pendingGus} />;
+  return <KrRegionClient sido={sido} income={income} availableGus={availableGus} pendingGus={pendingGus} guGeo={guGeo} />;
 }

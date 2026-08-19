@@ -478,7 +478,7 @@ export const translations: Record<LangCode, Translations> = {
     krMapHint: "지도나 목록에서 시/도를 선택하면 시군구별 목록으로 이동해요",
     krLegendNoData: "데이터 없음",
     krRegionMapTitleTemplate: "{region} 시군구를 선택하세요",
-    krRegionMapHint: "목록에서 시군구를 선택하면 그 지역 기준 결과를 볼 수 있어요",
+    krRegionMapHint: "지도나 목록에서 시군구를 선택하면 그 지역 기준 결과를 볼 수 있어요",
     krSearchSidoPlaceholder: "시/도 이름 검색...",
     krSearchGuPlaceholder: "시군구 이름 검색...",
     krListNoResults: "검색 결과가 없어요",
