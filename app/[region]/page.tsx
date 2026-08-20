@@ -32,7 +32,20 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
     title,
     description,
     alternates: { canonical: absoluteUrl(`/${sido.slug}`) },
-    openGraph: { title, description, url: absoluteUrl(`/${sido.slug}`), locale: "ko_KR", type: "website" },
+    openGraph: {
+      title,
+      description,
+      url: absoluteUrl(`/${sido.slug}`),
+      locale: "ko_KR",
+      type: "website",
+      images: [{ url: absoluteUrl("/og-kr.png"), width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [absoluteUrl("/og-kr.png")],
+    },
   };
 }
 

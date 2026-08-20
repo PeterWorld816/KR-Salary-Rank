@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     url: absoluteUrl("/"),
     locale: "ko_KR",
     type: "website",
+    images: [{ url: absoluteUrl("/og-kr.png"), width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: translations.ko.krAppTitle,
+    description: translations.ko.krTagline,
+    images: [absoluteUrl("/og-kr.png")],
   },
 };
 
