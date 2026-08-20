@@ -91,11 +91,27 @@ npm run dev
 
 http://localhost:3000 을 열면 바로 한국 홈 화면이 뜹니다.
 
-## 배포 (Vercel)
+## 배포 (Netlify)
+
+Git 저장소를 Netlify에 연결하면 Next.js 런타임을 자동 감지해 빌드/배포합니다.
+CLI로 직접 배포하려면:
 
 ```bash
-vercel
+netlify deploy --build --prod
 ```
+
+**환경변수 체크리스트** (Netlify 대시보드 → Site configuration → Environment variables):
+
+- `NEXT_PUBLIC_SITE_URL` — 없으면 canonical/OG URL이 `http://localhost:3000`으로
+  빌드됩니다(빌드 로그에 경고 출력). Netlify가 자동으로 채워주는 `URL`/`DEPLOY_PRIME_URL`이
+  fallback으로 쓰이지만(`lib/site-url.ts`), 커스텀 도메인을 쓴다면 이 값을 명시적으로
+  설정해야 og:url/canonical이 그 도메인을 가리킵니다.
+- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` — `lib/ads.ts` 기준, 이게 없으면 프로덕션에서도
+  광고가 전혀 렌더링되지 않습니다.
+
+**순서 주의**: 도메인을 Netlify에 먼저 연결한 뒤, 그 실제 도메인 기준으로
+위 두 값(특히 `NEXT_PUBLIC_SITE_URL`)을 설정하세요 — 순서가 바뀌면 배포 도메인과
+`NEXT_PUBLIC_SITE_URL`이 어긋나 OG 이미지/광고 게이트가 잘못된 호스트를 가리키게 됩니다.
 
 ## 의존성 보안
 
