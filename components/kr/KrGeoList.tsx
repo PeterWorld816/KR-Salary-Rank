@@ -48,6 +48,7 @@ export default function KrGeoList({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={searchPlaceholder}
+        aria-label={searchPlaceholder}
         className="input mb-2"
       />
       <div className="overflow-y-auto rounded-lg border border-border bg-surface" style={{ maxHeight }}>

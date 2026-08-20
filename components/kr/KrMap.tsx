@@ -50,6 +50,12 @@ export default function KrMap({
     onSelect(id);
   }
 
+  function handleKeyDown(e: React.KeyboardEvent, id: string) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    handleClick(id);
+  }
+
   return (
     <div className="relative w-full select-none" style={{ height }}>
       <ComposableMap projection={projection} width={width} height={height} style={{ width: "100%", height: "100%" }}>
@@ -63,7 +69,12 @@ export default function KrMap({
                   <Geography
                     key={g.rsmKey}
                     geography={g}
+                    tabIndex={disabled ? -1 : 0}
+                    role="button"
+                    aria-label={getLabel(id)}
+                    aria-disabled={disabled}
                     onClick={() => handleClick(id)}
+                    onKeyDown={(e: React.KeyboardEvent) => handleKeyDown(e, id)}
                     onMouseEnter={(e) => setHovered({ id, x: e.clientX, y: e.clientY })}
                     onMouseMove={(e) => setHovered((h) => (h ? { ...h, x: e.clientX, y: e.clientY } : h))}
                     onMouseLeave={() => setHovered(null)}
