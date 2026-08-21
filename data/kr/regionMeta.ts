@@ -100,6 +100,43 @@ export const KR_GU: GuMeta[] = [
   { slug: "incheon-donggu", name: "인천 동구", parentSlug: "incheon", available: true, code: "23020" },
   { slug: "ulsan-bukgu", name: "울산 북구", parentSlug: "ulsan", available: true, code: "26040" },
   { slug: "gyeonggi-icheon", name: "경기 이천시", parentSlug: "gyeonggi", available: true, code: "31210" },
+
+  // 군위군(code 37310)은 2023-07 대구광역시로 편입됐지만 이 topojson(southkorea/southkorea-maps,
+  // 2018년 판)은 아직 옛 경상북도 코드로 남아 있어 대구·경북 어느 쪽에도 안전하게 귀속시킬 수
+  // 없다 — data/kr/regionIncome.json의 meta.note 참고. 지도 경계 데이터가 갱신되기 전까지는
+  // 여기 목록에서 의도적으로 뺐다.
+  { slug: "daegu-junggu", name: "중구", parentSlug: "daegu", available: false, code: "22010" },
+  { slug: "daegu-donggu", name: "동구", parentSlug: "daegu", available: false, code: "22020" },
+  { slug: "daegu-seogu", name: "서구", parentSlug: "daegu", available: false, code: "22030" },
+  { slug: "daegu-namgu", name: "남구", parentSlug: "daegu", available: false, code: "22040" },
+  { slug: "daegu-bukgu", name: "북구", parentSlug: "daegu", available: false, code: "22050" },
+  { slug: "daegu-suseong", name: "수성구", parentSlug: "daegu", available: true, code: "22060" },
+  { slug: "daegu-dalseo", name: "달서구", parentSlug: "daegu", available: true, code: "22070" },
+  { slug: "daegu-dalseong", name: "달성군", parentSlug: "daegu", available: true, code: "22310" },
+
+  { slug: "gyeongbuk-pohang-nam", name: "포항시남구", parentSlug: "gyeongbuk", available: false, code: "37011" },
+  { slug: "gyeongbuk-pohang-buk", name: "포항시북구", parentSlug: "gyeongbuk", available: false, code: "37012" },
+  { slug: "gyeongbuk-gyeongju", name: "경주시", parentSlug: "gyeongbuk", available: true, code: "37020" },
+  { slug: "gyeongbuk-gimcheon", name: "김천시", parentSlug: "gyeongbuk", available: true, code: "37030" },
+  { slug: "gyeongbuk-andong", name: "안동시", parentSlug: "gyeongbuk", available: true, code: "37040" },
+  { slug: "gyeongbuk-gumi", name: "구미시", parentSlug: "gyeongbuk", available: true, code: "37050" },
+  { slug: "gyeongbuk-yeongju", name: "영주시", parentSlug: "gyeongbuk", available: true, code: "37060" },
+  { slug: "gyeongbuk-yeongcheon", name: "영천시", parentSlug: "gyeongbuk", available: true, code: "37070" },
+  { slug: "gyeongbuk-sangju", name: "상주시", parentSlug: "gyeongbuk", available: true, code: "37080" },
+  { slug: "gyeongbuk-mungyeong", name: "문경시", parentSlug: "gyeongbuk", available: true, code: "37090" },
+  { slug: "gyeongbuk-gyeongsan", name: "경산시", parentSlug: "gyeongbuk", available: true, code: "37100" },
+  { slug: "gyeongbuk-uiseong", name: "의성군", parentSlug: "gyeongbuk", available: true, code: "37320" },
+  { slug: "gyeongbuk-cheongsong", name: "청송군", parentSlug: "gyeongbuk", available: true, code: "37330" },
+  { slug: "gyeongbuk-yeongyang", name: "영양군", parentSlug: "gyeongbuk", available: true, code: "37340" },
+  { slug: "gyeongbuk-yeongdeok", name: "영덕군", parentSlug: "gyeongbuk", available: true, code: "37350" },
+  { slug: "gyeongbuk-cheongdo", name: "청도군", parentSlug: "gyeongbuk", available: false, code: "37360" },
+  { slug: "gyeongbuk-goryeong", name: "고령군", parentSlug: "gyeongbuk", available: true, code: "37370" },
+  { slug: "gyeongbuk-seongju", name: "성주군", parentSlug: "gyeongbuk", available: true, code: "37380" },
+  { slug: "gyeongbuk-chilgok", name: "칠곡군", parentSlug: "gyeongbuk", available: true, code: "37390" },
+  { slug: "gyeongbuk-yecheon", name: "예천군", parentSlug: "gyeongbuk", available: true, code: "37400" },
+  { slug: "gyeongbuk-bonghwa", name: "봉화군", parentSlug: "gyeongbuk", available: true, code: "37410" },
+  { slug: "gyeongbuk-uljin", name: "울진군", parentSlug: "gyeongbuk", available: true, code: "37420" },
+  { slug: "gyeongbuk-ulleung", name: "울릉군", parentSlug: "gyeongbuk", available: true, code: "37430" },
 ];
 
 const guBySlug = new Map(KR_GU.map((g) => [g.slug, g]));
