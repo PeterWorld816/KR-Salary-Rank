@@ -13,6 +13,7 @@ import { formatTemplate, translations, type Translations } from "@/lib/i18n";
 import { getSidoBySlug, getGuBySlug } from "@/data/kr/regionMeta";
 import { buildKrIncomeComparison, getMostSpecificKrComparison, krRegionIncomeMeta, type KrIncomeComparisonRow } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
+import { buildKrOccupationComparison } from "@/lib/krOccupation";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
 import KrRatioHeadline from "@/components/kr/KrRatioHeadline";
@@ -71,6 +72,7 @@ function KrResultDashboardContent() {
 
   const rows = buildKrIncomeComparison(input.annualIncome, sido.slug, gu && gu.parentSlug === sido.slug ? gu.slug : null);
   const best = getMostSpecificKrComparison(rows);
+  const occupation = buildKrOccupationComparison(input.annualIncome, input.occupationId);
   const backHref = "/" + (sp.toString() ? `?${sp.toString()}` : "");
   const downloadName = `income-rank-${sido.slug}${gu ? `-${gu.slug}` : ""}.png`;
 
@@ -102,6 +104,22 @@ function KrResultDashboardContent() {
             {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} · {t.krEstimatedPercentileLabel}
           </p>
           <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
+        </div>
+
+        <div className="mb-8 rounded-2xl border border-border bg-surface px-5 py-4">
+          <p className="text-caption font-semibold text-text-secondary">{occupation.occupation.name}</p>
+          <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
+            <strong className="text-title text-text">
+              {occupation.ratioPercent}% {t.krOccupationAverageLabel}
+            </strong>
+            <span className="text-caption text-text-tertiary">
+              {formatManwon(occupation.occupation.mean)} {t.krOccupationMeanLabel}
+            </span>
+          </div>
+          <p className="mt-1 text-caption text-text-tertiary">
+            {formatTemplate(t.topPercentTemplate, { percent: occupation.estimatedTopPercent })} ({t.krEstimatedPercentileLabel})
+          </p>
+          <p className="mt-2 text-caption text-text-tertiary">{t.krOccupationDisclaimer}</p>
         </div>
 
         <KrShareCard

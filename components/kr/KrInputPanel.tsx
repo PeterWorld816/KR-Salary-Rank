@@ -13,6 +13,7 @@ import { ChevronDown, Home } from "lucide-react";
 import { translations } from "@/lib/i18n";
 import { formatManwonCompact } from "@/lib/krFormat";
 import { readKrInputFromSearch, buildKrSearchParams, type KrInput } from "@/lib/krInput";
+import { KR_OCCUPATIONS } from "@/data/kr/occupations";
 
 const HEADER_HEIGHT = 56;
 
@@ -95,6 +96,7 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
           newCaret = i + 1;
           break;
         }
+
       }
     }
     input.setSelectionRange(newCaret, newCaret);
@@ -134,6 +136,27 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
   );
 }
 
+function OccupationField({ value, onCommit }: { value: string; onCommit: (v: string) => void }) {
+  const t = translations.ko;
+  return (
+    <div>
+      <FieldLabel>{t.krFieldOccupation}</FieldLabel>
+      <select
+        data-testid="kr-occupation-select"
+        value={value}
+        onChange={(event) => onCommit(event.target.value)}
+        className="input font-semibold"
+      >
+        {KR_OCCUPATIONS.map((occupation) => (
+          <option key={occupation.id} value={occupation.id}>
+            {occupation.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export default function KrInputPanel() {
   const t = translations.ko;
   const pathname = usePathname();
@@ -150,6 +173,7 @@ export default function KrInputPanel() {
     setForm(next);
     const params = new URLSearchParams(sp.toString());
     params.set("d", String(next.annualIncome));
+    params.set("o", next.occupationId);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
@@ -197,7 +221,8 @@ export default function KrInputPanel() {
 
               <div>
                 <h3 className="mb-2.5 text-caption font-semibold text-text-secondary">{t.krGroupMoney}</h3>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <OccupationField value={form.occupationId} onCommit={(occupationId) => apply({ ...form, occupationId })} />
                   <IncomeField
                     label={t.krFieldIncome}
                     value={form.annualIncome}
