@@ -145,7 +145,7 @@ function OccupationField({ value, onCommit }: { value: string; onCommit: (v: str
         data-testid="kr-occupation-select"
         value={value}
         onChange={(event) => onCommit(event.target.value)}
-        className="input font-semibold"
+        className="input font-semibold [color-scheme:dark]"
       >
         {KR_OCCUPATIONS.map((occupation) => (
           <option key={occupation.id} value={occupation.id}>
@@ -174,6 +174,8 @@ export default function KrInputPanel() {
     const params = new URLSearchParams(sp.toString());
     params.set("d", String(next.annualIncome));
     params.set("o", next.occupationId);
+    params.set("a", next.ageBand);
+    params.set("m", next.maritalStatus);
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 
@@ -246,13 +248,22 @@ export default function KrInputPanel() {
                 {showDemographics && (
                   <>
                     <div className="mt-2.5 flex flex-col gap-3 sm:flex-row sm:gap-6">
-                      <DisabledPillGroup label={t.krFieldGender} options={["남성", "여성"]} badge={t.krComingSoonBadge} />
-                      <DisabledPillGroup label={t.krFieldMarital} options={["미혼", "기혼"]} badge={t.krComingSoonBadge} />
-                      <DisabledPillGroup
-                        label={t.krFieldAgeBand}
-                        options={["20대", "30대", "40대", "50대+"]}
-                        badge={t.krComingSoonBadge}
-                      />
+                      <div>
+                        <FieldLabel>{t.krFieldMarital}</FieldLabel>
+                        <div className="flex gap-1.5">
+                          {([["single", "미혼"], ["married", "기혼"]] as const).map(([id, label]) => (
+                            <button key={id} type="button" onClick={() => apply({ ...form, maritalStatus: id })} className={`option-row min-h-0 justify-center px-3 py-2 text-caption ${form.maritalStatus === id ? "border-accent bg-accent-tint text-accent" : ""}`}>{label}</button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <FieldLabel>{t.krFieldAgeBand}</FieldLabel>
+                        <div className="flex flex-wrap gap-1.5">
+                          {([["20s", "20대"], ["30s", "30대"], ["40s", "40대"], ["50s", "50대+"]] as const).map(([id, label]) => (
+                            <button key={id} type="button" onClick={() => apply({ ...form, ageBand: id })} className={`option-row min-h-0 justify-center px-3 py-2 text-caption ${form.ageBand === id ? "border-accent bg-accent-tint text-accent" : ""}`}>{label}</button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     <p className="mt-2 text-caption text-text-tertiary">{t.krDemographicComingSoonNote}</p>
                   </>

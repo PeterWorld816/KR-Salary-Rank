@@ -12,6 +12,8 @@ import Footer from "@/components/Footer";
 import Spinner from "@/components/Spinner";
 import { KR_SIDO } from "@/data/kr/regionMeta";
 import { getRegionIncomeByName, getAvailableGusForSido, krRegionIncomeMeta } from "@/lib/krIncomeCalc";
+import { adjustedOccupationMean } from "@/lib/krOccupation";
+import { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import { incomeFill } from "@/components/colorScale";
 import { formatManwon } from "@/lib/krFormat";
 
@@ -20,14 +22,16 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
   const router = useRouter();
   const sp = useSearchParams();
   const qs = sp.toString();
+  const input = readKrInputFromSearch(sp);
 
   const meanByCode = useMemo(() => {
     const map = new Map<string, number | null>();
     for (const sido of KR_SIDO) {
-      map.set(sido.code, sido.available ? getRegionIncomeByName(sido.name)?.mean ?? null : null);
+      const mean = sido.available ? getRegionIncomeByName(sido.name)?.mean : null;
+      map.set(sido.code, mean == null ? null : adjustedOccupationMean(mean, input.occupationId, input.ageBand, input.maritalStatus));
     }
     return map;
-  }, []);
+  }, [input.ageBand, input.maritalStatus, input.occupationId]);
 
   const { min, max } = useMemo(() => {
     const values = [...meanByCode.values()].filter((v): v is number => v != null);

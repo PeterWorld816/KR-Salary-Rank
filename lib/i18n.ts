@@ -497,7 +497,7 @@ export const translations: Record<LangCode, Translations> = {
     krOccupationMeanLabel: "직업 평균",
     krOccupationDisclaimer: "직업별 평균은 직업군별 참고용 추정치이며, 고용형태·경력·지역에 따라 실제 연봉과 다를 수 있어요.",
     krComingSoonBadge: "준비중",
-    krDemographicComingSoonNote: "성별·결혼상태·연령대별 지역 데이터는 아직 없어서, 지금은 지역 평균 대비 비교만 제공해요.",
+    krDemographicComingSoonNote: "직업·결혼상태·연령대별 수치는 공개 지역 평균에 기반한 참고용 추정치예요. 실제 연봉은 경력과 고용형태에 따라 다를 수 있어요.",
     krDemographicToggleShow: "더 보기",
     krDemographicToggleHide: "접기",
     krOnboardingStepsLine: "① 소득 입력 → ② 지도에서 지역 선택 → ③ 결과 확인",

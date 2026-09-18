@@ -18,6 +18,7 @@ import type { KrRegionIncome } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
 import { incomeFill } from "@/components/colorScale";
 import { buildMailto } from "@/lib/contact";
+import { adjustedOccupationMean } from "@/lib/krOccupation";
 
 function KrRegionContent({
   sido,
@@ -40,10 +41,14 @@ function KrRegionContent({
 
   const guItems = useMemo(
     () => [
-      ...availableGus.map((g) => ({ id: g.meta.slug, name: g.meta.name, sub: formatManwon(g.income.mean) })),
+      ...availableGus.map((g) => ({
+        id: g.meta.slug,
+        name: g.meta.name,
+        sub: formatManwon(adjustedOccupationMean(g.income.mean, input.occupationId, input.ageBand, input.maritalStatus)),
+      })),
       ...pendingGus.map((g) => ({ id: g.slug, name: g.name, sub: t.krPendingBadge, disabled: true })),
     ],
-    [availableGus, pendingGus, t.krPendingBadge]
+    [availableGus, pendingGus, t.krPendingBadge, input.occupationId, input.ageBand, input.maritalStatus]
   );
 
   // Map keys off each 구/시's 5-digit code (see regionMeta.ts's GuMeta.code),
@@ -67,7 +72,10 @@ function KrRegionContent({
     for (const g of pendingGus) map.set(g.code, g.slug);
     return map;
   }, [availableGus, pendingGus]);
-  const meanByCode = useMemo(() => new Map(availableGus.map((g) => [g.meta.code, g.income.mean])), [availableGus]);
+  const meanByCode = useMemo(
+    () => new Map(availableGus.map((g) => [g.meta.code, adjustedOccupationMean(g.income.mean, input.occupationId, input.ageBand, input.maritalStatus)])),
+    [availableGus, input.occupationId, input.ageBand, input.maritalStatus]
+  );
   const disabledCodeIds = useMemo(
     () => new Set((guGeo?.features ?? []).map((f) => String(f.id)).filter((code) => !meanByCode.has(code))),
     [guGeo, meanByCode]
@@ -131,7 +139,7 @@ function KrRegionContent({
 
         <div className="mb-8 rounded-xl border border-border bg-surface px-5 py-4">
           <p className="mb-1 text-caption text-text-secondary">{t.krMeanLabel}</p>
-          <p className="text-title tabular-nums text-text">{formatManwon(income.mean)}</p>
+          <p className="text-title tabular-nums text-text">{formatManwon(adjustedOccupationMean(income.mean, input.occupationId, input.ageBand, input.maritalStatus))}</p>
         </div>
 
         <Link

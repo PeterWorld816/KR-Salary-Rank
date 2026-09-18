@@ -11,9 +11,11 @@
 export type KrInput = {
   annualIncome: number; // 만원, pre-tax — the only real input
   occupationId: string;
+  ageBand: "20s" | "30s" | "40s" | "50s";
+  maritalStatus: "single" | "married";
 };
 
-export const DEFAULT_KR_INPUT: KrInput = { annualIncome: 4000, occupationId: "general" };
+export const DEFAULT_KR_INPUT: KrInput = { annualIncome: 4000, occupationId: "general", ageBand: "30s", maritalStatus: "single" };
 
 export function encodeKrInput(input: KrInput): string {
   return String(input.annualIncome);
@@ -30,10 +32,12 @@ export function readKrInputFromSearch(sp: URLSearchParams | { get(k: string): st
   return {
     annualIncome: income?.annualIncome ?? DEFAULT_KR_INPUT.annualIncome,
     occupationId: getOccupationById(sp.get("o") || DEFAULT_KR_INPUT.occupationId).id,
+    ageBand: ["20s", "30s", "40s", "50s"].includes(sp.get("a") ?? "") ? (sp.get("a") as KrInput["ageBand"]) : DEFAULT_KR_INPUT.ageBand,
+    maritalStatus: sp.get("m") === "married" ? "married" : DEFAULT_KR_INPUT.maritalStatus,
   };
 }
 
 export function buildKrSearchParams(input: KrInput, lang: string): URLSearchParams {
-  return new URLSearchParams({ d: encodeKrInput(input), o: input.occupationId, lang });
+  return new URLSearchParams({ d: encodeKrInput(input), o: input.occupationId, a: input.ageBand, m: input.maritalStatus, lang });
 }
 import { getOccupationById } from "@/data/kr/occupations";
