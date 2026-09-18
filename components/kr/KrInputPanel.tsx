@@ -6,7 +6,7 @@
 // entirely, so visitors can see what's coming rather than wondering why /kr
 // looks thinner than /us — see data/kr/regionIncome.json's meta.note for why
 // no per-demographic regional data exists yet.
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronDown, Home } from "lucide-react";
@@ -138,21 +138,56 @@ function IncomeField({ label, value, onCommit }: { label: string; value: number;
 
 function OccupationField({ value, onCommit }: { value: string; onCommit: (v: string) => void }) {
   const t = translations.ko;
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selected = KR_OCCUPATIONS.find((occupation) => occupation.id === value) ?? KR_OCCUPATIONS[0];
+
+  useEffect(() => {
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, []);
+
   return (
-    <div>
+    <div ref={containerRef} className="relative">
       <FieldLabel>{t.krFieldOccupation}</FieldLabel>
-      <select
+      <button
+        type="button"
         data-testid="kr-occupation-select"
-        value={value}
-        onChange={(event) => onCommit(event.target.value)}
-        className="input font-semibold"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls="kr-occupation-options"
+        onClick={() => setOpen((current) => !current)}
+        className="input flex items-center justify-between text-left font-semibold"
       >
-        {KR_OCCUPATIONS.map((occupation) => (
-          <option key={occupation.id} value={occupation.id}>
-            {occupation.name}
-          </option>
-        ))}
-      </select>
+        <span>{selected.name}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-text-secondary transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div id="kr-occupation-options" role="listbox" className="absolute inset-x-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-md border border-border-strong bg-bg shadow-lg">
+          {KR_OCCUPATIONS.map((occupation) => (
+            <button
+              key={occupation.id}
+              type="button"
+              role="option"
+              aria-selected={occupation.id === selected.id}
+              onClick={() => {
+                onCommit(occupation.id);
+                setOpen(false);
+              }}
+              className={`block min-h-0 w-full px-4 py-3 text-left text-body transition-colors ${
+                occupation.id === selected.id
+                  ? "bg-accent-tint font-bold text-accent"
+                  : "text-text-secondary hover:bg-bg-subtle hover:text-text"
+              }`}
+            >
+              {occupation.name}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
