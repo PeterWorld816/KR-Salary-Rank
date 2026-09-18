@@ -15,6 +15,7 @@ import { getTier } from "@/lib/tier";
 import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import Spinner from "@/components/Spinner";
 import { buildKrIncomeComparison, getMostSpecificKrComparison } from "@/lib/krIncomeCalc";
+import { buildKrOccupationComparison } from "@/lib/krOccupation";
 
 const CHART_WIDTH = 200;
 const CHART_MIN = 1500; // 만원
@@ -27,6 +28,7 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
 
   const rows = buildKrIncomeComparison(input.annualIncome, presetSidoSlug, presetGuSlug);
   const best = getMostSpecificKrComparison(rows);
+  const occupation = buildKrOccupationComparison(input.annualIncome, input.occupationId);
   // No region picked yet (home screen's first paint) — the card below is
   // still a real, honest number (전국 평균 대비 실측치), but nothing about it
   // is personalized yet, so it's flagged as a preview rather than presented
@@ -66,6 +68,10 @@ function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: s
           {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} ({t.krEstimatedPercentileLabel}) —{" "}
           {t.krEstimatedPercentileDisclaimer}
         </p>
+        <p className="mt-2 text-caption font-semibold text-text-secondary">
+          {occupation.occupation.name}: {occupation.ratioPercent}% {t.krOccupationAverageLabel}
+        </p>
+        <p className="mt-1 text-caption text-text-tertiary">{t.krOccupationDisclaimer}</p>
       </div>
     </>
   );
