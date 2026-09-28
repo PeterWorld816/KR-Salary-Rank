@@ -8,6 +8,7 @@ import { feature } from "topojson-client";
 import type { FeatureCollection, Geometry } from "geojson";
 import provincesTopology from "@/data/kr/skorea-provinces-2018-topo-simple.json";
 import municipalitiesTopology from "@/data/kr/skorea-municipalities-2018-topo-simple.json";
+import { KR_GU, getSidoBySlug } from "@/data/kr/regionMeta";
 
 export type KrGeoProps = { name: string; code: string };
 export type KrFeatureCollection = FeatureCollection<Geometry, KrGeoProps>;
@@ -46,13 +47,21 @@ function getAllKrGuGeo(): KrFeatureCollection {
   return guGeoCache;
 }
 
-// All 시군구 belonging to one 시도 — mirrors lib/usGeo.ts's
-// getUsCountiesGeoForState(stateFips), filtering the whole country's
-// 시군구 topology down to one province by its 2-digit code prefix.
+// All 시군구 belonging to one 시도. Use explicit metadata when available so
+// transferred districts such as 군위군 follow their current statistical
+// parent; fall back to the topology's code prefix for other polygons.
 export function getKrGuGeoForSido(sidoCode: string): KrFeatureCollection {
   const all = getAllKrGuGeo();
+  const parentSlugByCode = new Map(
+    KR_GU.flatMap((gu) => gu.code ? [[gu.code, gu.parentSlug] as const] : [])
+  );
   return {
     type: "FeatureCollection",
-    features: all.features.filter((f) => String(f.id).slice(0, 2) === sidoCode),
+    features: all.features.filter((f) => {
+      const code = String(f.id);
+      const parentSlug = parentSlugByCode.get(code);
+      const mappedSido = parentSlug ? getSidoBySlug(parentSlug) : null;
+      return mappedSido ? mappedSido.code === sidoCode : code.slice(0, 2) === sidoCode;
+    }),
   };
 }

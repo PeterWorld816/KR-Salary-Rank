@@ -22,6 +22,19 @@ test("share buttons render on /result and each action does something", async ({ 
   const cardText = (await page.locator('[aria-hidden="true"]').allTextContents()).join(" ");
   expect(cardText).toContain("krsalaryrank.netlify.app");
   expect(cardText).not.toContain("localhost:3000");
+  const shareCards = page.locator('[aria-hidden="true"]').filter({ hasText: "연봉 밸런스" });
+  await expect(shareCards).toHaveCount(2);
+  const cardLayout = await shareCards.evaluateAll((cards) =>
+    cards.map((card) => ({
+      width: Math.round(card.getBoundingClientRect().width),
+      height: Math.round(card.getBoundingClientRect().height),
+      contentFits: card.scrollHeight <= card.clientHeight,
+    }))
+  );
+  expect(cardLayout).toEqual([
+    { width: 400, height: 540, contentFits: true },
+    { width: 405, height: 720, contentFits: true },
+  ]);
 
   // navigator.share is unavailable in headless Chromium, so "공유하기" falls
   // back to copying the URL — same clipboard fallback path as 카카오톡 공유.
@@ -32,6 +45,7 @@ test("share buttons render on /result and each action does something", async ({ 
   await expect(page.getByText("공유 문구가 복사됐어요")).toBeVisible();
   const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
   expect(clipboardText).toContain("소득 상위");
+  expect(clipboardText).toContain("(추정)");
   expect(clipboardText).toContain("/result?region=seoul&gu=seoul-gangnam&d=6000");
 
   const downloadPromise = page.waitForEvent("download");

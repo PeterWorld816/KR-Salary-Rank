@@ -17,7 +17,7 @@
 //     krEstimatedPercentileDisclaimer) — never present it as if it came from
 //     an actual 국세청 분위 table the way /us's percentiles do.
 import regionIncomeData from "@/data/kr/regionIncome.json";
-import { KR_SIDO, KR_GU, getSidoBySlug, getSidoByName, getGuBySlug, getGusForSidoSlug, type SidoMeta, type GuMeta } from "@/data/kr/regionMeta";
+import { KR_SIDO, getSidoBySlug, getGuBySlug, getGusForSidoSlug, type SidoMeta, type GuMeta } from "@/data/kr/regionMeta";
 import { clampDisplayPercent } from "@/lib/percentileTable";
 
 export type KrRegionLevel = "national" | "sido" | "gu";
@@ -26,11 +26,17 @@ export type KrRegionIncome = {
   name: string;
   level: KrRegionLevel;
   parent?: string;
+  parentSlug?: string;
+  slug?: string;
+  code?: string;
+  aggregation?: "city";
+  sourceYear?: number;
   mean: number; // 만원, pre-tax annual average
 };
 
 const REGIONS = regionIncomeData.regions as KrRegionIncome[];
-const regionByName = new Map(REGIONS.map((r) => [r.name, r]));
+const regionByName = new Map(REGIONS.filter((r) => r.level !== "gu").map((r) => [r.name, r]));
+const regionBySlug = new Map(REGIONS.flatMap((r) => r.slug ? [[r.slug, r] as const] : []));
 
 export const krRegionIncomeMeta = regionIncomeData.meta;
 
@@ -54,7 +60,7 @@ export function getSidoIncome(sidoSlug: string): { meta: SidoMeta; income: KrReg
 export function getGuIncome(guSlug: string): { meta: GuMeta; income: KrRegionIncome } | null {
   const meta = getGuBySlug(guSlug);
   if (!meta || !meta.available) return null;
-  const income = getRegionIncomeByName(meta.name);
+  const income = regionBySlug.get(meta.slug);
   return income ? { meta, income } : null;
 }
 
@@ -64,8 +70,8 @@ export function getGuIncome(guSlug: string): { meta: GuMeta; income: KrRegionInc
 export function getAvailableGusForSido(sidoSlug: string): { meta: GuMeta; income: KrRegionIncome }[] {
   return getGusForSidoSlug(sidoSlug)
     .filter((g) => g.available)
-    .map((meta) => ({ meta, income: regionByName.get(meta.name)! }))
-    .filter((row) => row.income != null);
+    .map((meta) => ({ meta, income: regionBySlug.get(meta.slug) }))
+    .filter((row): row is { meta: GuMeta; income: KrRegionIncome } => row.income != null);
 }
 
 export function getPendingGusForSido(sidoSlug: string): GuMeta[] {

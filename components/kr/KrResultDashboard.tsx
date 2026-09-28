@@ -8,7 +8,7 @@
 import { Suspense, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, BriefcaseBusiness, ChevronLeft, LockKeyhole, MapPin, Sparkles } from "lucide-react";
 import { formatTemplate, translations, type Translations } from "@/lib/i18n";
 import { getSidoBySlug, getGuBySlug } from "@/data/kr/regionMeta";
 import { buildKrIncomeComparison, getMostSpecificKrComparison, krRegionIncomeMeta, type KrIncomeComparisonRow } from "@/lib/krIncomeCalc";
@@ -85,29 +85,88 @@ function KrResultDashboardContent() {
           {t.krBackToKrMap}
         </Link>
 
-        <h1 className="mb-2 text-display text-balance">{t.krDashboardIncomeSectionTitle}</h1>
-        <p className="mb-6 max-w-xl text-body text-text-secondary">{t.krResultDashboardIntro}</p>
-
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface px-5 py-4 sm:flex-nowrap">
-          <div className="flex min-w-0 flex-col items-start gap-1">
-            <TierBadge tier={getTier(best.estimatedTopPercent)} />
-            <KrRatioHeadline ratioPercent={best.ratioPercent} />
-            <p className="text-caption font-semibold text-text-secondary">{formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}</p>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-display text-balance">{t.krDashboardIncomeSectionTitle}</h1>
+            <p className="mt-1 max-w-xl text-body text-text-secondary">{t.krResultDashboardIntro}</p>
           </div>
-          <div className="shrink-0">
-            <DistributionChart monthlySalary={input.annualIncome} width={220} dark min={CHART_MIN} max={CHART_MAX} averageValue={best.mean} />
-          </div>
+          <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-accent-line bg-accent-tint px-3 py-1.5 text-caption font-semibold text-accent sm:inline-flex">
+            <LockKeyhole className="h-3.5 w-3.5" />
+            내 브라우저에서만 계산
+          </span>
         </div>
 
-        <div className="mb-8 rounded-xl border border-warn-line bg-warn-tint px-4 py-3">
-          <p className="text-caption font-semibold text-warn">
-            {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} · {t.krEstimatedPercentileLabel}
-          </p>
-          <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
+        <section
+          aria-label="지역 평균 대비 소득 요약"
+          className="relative isolate mb-6 overflow-hidden rounded-[28px] border border-accent-line p-5 shadow-lg sm:p-7"
+          style={{
+            background:
+              "radial-gradient(circle at 90% 0%, rgba(52,211,153,0.18), transparent 34%), radial-gradient(circle at 0% 100%, rgba(251,191,36,0.08), transparent 34%), linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015))",
+          }}
+        >
+          <div className="relative">
+            <div className="mb-7 flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-subtle px-3 py-1.5 text-caption font-semibold text-text-secondary">
+                <MapPin className="h-3.5 w-3.5 text-accent" />
+                {best.name} 기준
+              </span>
+              <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
+                <Sparkles className="h-3.5 w-3.5 text-warn" />
+                내 소득 리포트
+              </span>
+            </div>
+
+            <div className="grid items-center gap-6 sm:grid-cols-[minmax(0,1fr)_220px]">
+              <div className="min-w-0">
+                <TierBadge tier={getTier(best.estimatedTopPercent)} className="mb-3" />
+                <KrRatioHeadline ratioPercent={best.ratioPercent} size="hero" />
+                <p className="mt-2 text-body font-semibold text-text-secondary">
+                  {formatTemplate(t.krRatioHeroLabelTemplate, { region: best.name })}
+                </p>
+              </div>
+              <div className="mx-auto w-full max-w-[260px] rounded-2xl border border-border bg-bg-subtle/70 px-3 py-2 sm:max-w-none">
+                <DistributionChart
+                  monthlySalary={input.annualIncome}
+                  width={220}
+                  dark
+                  min={CHART_MIN}
+                  max={CHART_MAX}
+                  averageValue={best.mean}
+                />
+              </div>
+            </div>
+
+            <div className="mt-7 grid grid-cols-2 gap-3 border-t border-border pt-4">
+              <div className="rounded-2xl bg-bg-subtle/70 px-4 py-3">
+                <p className="text-caption text-text-tertiary">내가 입력한 연봉</p>
+                <p className="mt-1 text-title font-bold tabular-nums text-text">{formatManwon(input.annualIncome)}</p>
+              </div>
+              <div className="rounded-2xl bg-bg-subtle/70 px-4 py-3">
+                <p className="text-caption text-text-tertiary">{best.name} 평균 연봉</p>
+                <p className="mt-1 text-title font-bold tabular-nums text-text">{formatManwon(best.mean)}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-warn-line bg-warn-tint px-4 py-4">
+          <span className="mt-0.5 rounded-xl bg-warn-tint p-2 text-warn"><Sparkles className="h-4 w-4" /></span>
+          <div>
+            <p className="text-caption font-bold text-warn">
+              {formatTemplate(t.topPercentTemplate, { percent: best.estimatedTopPercent })} · {t.krEstimatedPercentileLabel}
+            </p>
+            <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
+          </div>
         </div>
 
         <div className="mb-8 rounded-2xl border border-border bg-surface px-5 py-4">
-          <p className="text-caption font-semibold text-text-secondary">{occupation.occupation.name}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="flex items-center gap-2 text-caption font-semibold text-text-secondary">
+              <BriefcaseBusiness className="h-4 w-4 text-accent" />
+              {occupation.occupation.name}
+            </p>
+            <span className="rounded-full border border-border px-2.5 py-1 text-caption text-text-tertiary">직업군 참고치</span>
+          </div>
           <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
             <strong className="text-title text-text">
               {occupation.ratioPercent}% {t.krOccupationAverageLabel}
@@ -126,7 +185,7 @@ function KrResultDashboardContent() {
           cardRef={shareCardRef}
           variant="wide"
           regionName={best.name}
-          monthlySalary={input.annualIncome}
+          annualIncome={input.annualIncome}
           averageValue={best.mean}
           ratioPercent={best.ratioPercent}
           estimatedTopPercent={best.estimatedTopPercent}
@@ -135,11 +194,18 @@ function KrResultDashboardContent() {
           cardRef={storyCardRef}
           variant="story"
           regionName={best.name}
-          monthlySalary={input.annualIncome}
+          annualIncome={input.annualIncome}
           averageValue={best.mean}
           ratioPercent={best.ratioPercent}
           estimatedTopPercent={best.estimatedTopPercent}
         />
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <div>
+            <h2 className="text-title font-bold text-text">이 결과, 친구에게 보여줄까요?</h2>
+            <p className="mt-1 text-caption text-text-tertiary">카드에는 입력한 연봉과 지역 평균이 표시돼요.</p>
+          </div>
+          <Sparkles className="mb-1 h-5 w-5 shrink-0 text-warn" />
+        </div>
         <div className="mb-8">
           <ShareButtons
             cardRef={shareCardRef}
@@ -155,17 +221,21 @@ function KrResultDashboardContent() {
           />
         </div>
 
-        <h2 className="mb-3 text-title text-text">{t.krCompareChartTitle}</h2>
-        <dl className="mb-8 divide-y divide-border rounded-xl border border-border bg-surface px-4">
+        <h2 className="mb-3 text-title font-bold text-text">{t.krCompareChartTitle}</h2>
+        <dl className="mb-8 divide-y divide-border rounded-2xl border border-border bg-surface px-4">
           {rows.map((row) => (
-            <div key={row.level} className="flex items-center justify-between py-3">
-              <dt className="text-caption font-medium text-text-secondary">
-                {levelLabel(row.level, t)} <span className="text-text-tertiary">· {row.name}</span>
+            <div key={row.level} className="flex items-center gap-3 py-4">
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${row.level === best.level ? "bg-accent-tint text-accent" : "bg-bg-subtle text-text-tertiary"}`}>
+                {row.ratioPercent >= 100 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+              </span>
+              <dt className="min-w-0 flex-1">
+                <span className="block text-caption font-semibold text-text">{levelLabel(row.level, t)}</span>
+                <span className="block truncate text-caption text-text-tertiary">{row.name}</span>
               </dt>
-              <dd className="text-right">
+              <dd className="shrink-0 text-right">
                 <div className="text-body font-bold tabular-nums text-text">{formatManwon(row.mean)}</div>
-                <div className="text-caption tabular-nums text-text-tertiary">
-                  {row.ratioPercent}% · {formatTemplate(t.topPercentTemplate, { percent: row.estimatedTopPercent })}
+                <div className={`text-caption tabular-nums ${row.level === best.level ? "font-semibold text-accent" : "text-text-tertiary"}`}>
+                  평균 대비 {row.ratioPercent}%
                 </div>
               </dd>
             </div>
