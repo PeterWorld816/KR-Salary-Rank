@@ -8,7 +8,7 @@
 // no per-demographic regional data exists yet.
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Home } from "lucide-react";
 import { translations } from "@/lib/i18n";
 import { formatManwonCompact } from "@/lib/krFormat";
@@ -195,7 +195,6 @@ function OccupationField({ value, onCommit }: { value: string; onCommit: (v: str
 export default function KrInputPanel() {
   const t = translations.ko;
   const pathname = usePathname();
-  const router = useRouter();
   const sp = useSearchParams();
   const [form, setForm] = useState<KrInput>(() => readKrInputFromSearch(sp));
   const [expanded, setExpanded] = useState(() => !sp.get("d"));
@@ -209,7 +208,7 @@ export default function KrInputPanel() {
     const params = new URLSearchParams(sp.toString());
     params.set("d", String(next.annualIncome));
     params.set("o", next.occupationId);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
   }
 
   const summary = formatManwonCompact(form.annualIncome);

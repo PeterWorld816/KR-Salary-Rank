@@ -19,13 +19,15 @@ const config: Config = {
           "sans-serif",
         ],
       },
-      // Type scale — 4 steps only. Use these instead of ad-hoc text-xl/text-2xl/etc.
+      // Type scale — use these instead of ad-hoc text-xl/text-2xl/etc.
       // The one accepted exception is all-caps micro-labels (eyebrow field
       // labels, small pill badges) and inline SVG <text> (which can't take
       // Tailwind classes at all) — those may go below `caption`, each with a
       // comment at the call site explaining why.
       fontSize: {
         display: ["28px", { lineHeight: "1.25", fontWeight: "700", letterSpacing: "-0.01em" }],
+        hero: ["clamp(2rem, 8vw, 3.5rem)", { lineHeight: "1.08", fontWeight: "800", letterSpacing: "-0.04em" }],
+        "share-hero": ["44px", { lineHeight: "1.08", fontWeight: "800", letterSpacing: "-0.04em" }],
         title: ["18px", { lineHeight: "1.4", fontWeight: "600" }],
         body: ["15px", { lineHeight: "1.6", fontWeight: "400" }],
         caption: ["13px", { lineHeight: "1.45", fontWeight: "400" }],

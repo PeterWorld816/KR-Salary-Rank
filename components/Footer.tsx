@@ -6,6 +6,7 @@ export default function Footer() {
   const t = translations.ko;
 
   const links = [
+    { href: "/insights", label: "읽을거리" },
     { href: "/about", label: t.footerAbout },
     { href: "/privacy", label: t.footerPrivacy },
     { href: "/contact", label: t.footerContact },

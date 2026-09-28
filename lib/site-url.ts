@@ -9,7 +9,8 @@
 //   1. NEXT_PUBLIC_SITE_URL   — explicit, always wins
 //   2. URL                    — Netlify: production deploy's URL
 //   3. DEPLOY_PRIME_URL       — Netlify: preview/branch deploy's URL
-//   4. http://localhost:3000  — local dev only
+//   4. production domain      — production builds without deploy env vars
+//   5. http://localhost:3000  — local development only
 //
 // NOTE: lib/ads.ts intentionally does NOT use this — it needs the one fixed
 // production domain to gate ad-loading against, and #2/#3 above are each
@@ -22,25 +23,11 @@ function normalize(raw: string): string {
   return withProtocol.replace(/\/+$/, ""); // no trailing slash, or `${base}/${path}` doubles up
 }
 
-let warnedAboutFallback = false;
-
 export function getSiteUrl(): string {
   const candidate = process.env.NEXT_PUBLIC_SITE_URL || process.env.URL || process.env.DEPLOY_PRIME_URL;
   if (candidate) return normalize(candidate);
 
-  if (process.env.NODE_ENV === "production" && !warnedAboutFallback) {
-    warnedAboutFallback = true;
-    // eslint-disable-next-line no-console -- intentional: this should be impossible to miss in build logs
-    console.warn(
-      "\n" +
-        "⚠️  ⚠️  ⚠️  [lib/site-url.ts] PRODUCTION BUILD WITHOUT A SITE URL  ⚠️  ⚠️  ⚠️\n" +
-        "None of NEXT_PUBLIC_SITE_URL, URL, or DEPLOY_PRIME_URL are set — canonical/OG\n" +
-        "URLs are falling back to http://localhost:3000 and WILL ship that way.\n" +
-        "Set NEXT_PUBLIC_SITE_URL, or deploy on Netlify (which sets URL/DEPLOY_PRIME_URL\n" +
-        "automatically) before this build goes live.\n"
-    );
-  }
-
+  if (process.env.NODE_ENV === "production") return "https://krsalaryrank.netlify.app";
   return "http://localhost:3000";
 }
 

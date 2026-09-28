@@ -78,9 +78,6 @@ export default function ShareButtons({
   const [savingStory, setSavingStory] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const hasStory = Boolean(storyCardRef && storyWidth && storyHeight);
-  const cols = 2 + (hasStory ? 1 : 0) + (enableKakao ? 1 : 0);
-  const gridColsClass = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" }[cols] ?? "grid-cols-2";
-
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2800);
@@ -150,29 +147,32 @@ export default function ShareButtons({
         </div>
       )}
 
-      <div className={`grid gap-3 ${gridColsClass}`}>
-        <button onClick={handleShare} className="btn btn-primary flex-col gap-1 h-[72px]">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <button onClick={handleShare} className="btn btn-primary h-auto min-h-[84px] flex-col gap-1 px-2 py-3">
           <Share2 className="w-5 h-5" />
           <span className="text-caption font-semibold">{t.share}</span>
+          <span className="text-caption opacity-75">결과 링크 공유</span>
         </button>
-        <button onClick={handleSave} disabled={saving} className="btn btn-secondary flex-col gap-1 h-[72px]">
+        <button onClick={handleSave} disabled={saving} className="btn btn-secondary h-auto min-h-[84px] flex-col gap-1 px-2 py-3">
           {saving ? (
             <Spinner />
           ) : (
             <>
               <Download className="w-5 h-5" />
               <span className="text-caption font-semibold">{t.save}</span>
+              <span className="text-caption text-text-tertiary">피드용 카드</span>
             </>
           )}
         </button>
         {hasStory && (
-          <button onClick={handleSaveStory} disabled={savingStory} className="btn btn-secondary flex-col gap-1 h-[72px]">
+          <button onClick={handleSaveStory} disabled={savingStory} className="btn btn-secondary h-auto min-h-[84px] flex-col gap-1 px-2 py-3">
             {savingStory ? (
               <Spinner />
             ) : (
               <>
                 <Sparkles className="w-5 h-5" />
                 <span className="text-caption font-semibold">{t.saveStory}</span>
+                <span className="text-caption text-text-tertiary">세로형 · 9:16</span>
               </>
             )}
           </button>
@@ -180,7 +180,7 @@ export default function ShareButtons({
         {enableKakao && (
           <button
             onClick={handleKakaoShare}
-            className="btn flex-col gap-1 h-[72px]"
+            className="btn h-auto min-h-[84px] flex-col gap-1 px-2 py-3"
             // Kakao's official brand yellow — kept literal rather than
             // tokenized, same reasoning as any other third-party brand mark:
             // it needs to stay recognizable as "KakaoTalk" regardless of
@@ -189,6 +189,7 @@ export default function ShareButtons({
           >
             <MessageCircle className="w-5 h-5" />
             <span className="text-caption font-semibold">{t.shareKakao}</span>
+            <span className="text-caption opacity-70">문구와 링크 복사</span>
           </button>
         )}
       </div>

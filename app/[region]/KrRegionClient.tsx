@@ -40,34 +40,38 @@ function KrRegionContent({
 
   const guItems = useMemo(
     () => [
-      ...availableGus.map((g) => ({ id: g.meta.slug, name: g.meta.name, sub: formatManwon(g.income.mean) })),
+      ...availableGus.map((g) => ({
+        id: g.meta.slug,
+        name: g.meta.name,
+        sub: formatManwon(g.income.mean),
+        badge: g.meta.aggregation === "city" ? "시 전체" : undefined,
+      })),
       ...pendingGus.map((g) => ({ id: g.slug, name: g.name, sub: t.krPendingBadge, disabled: true })),
     ],
     [availableGus, pendingGus, t.krPendingBadge]
   );
 
-  // Map keys off each 구/시's 5-digit code (see regionMeta.ts's GuMeta.code),
-  // not its slug — the gu topojson's feature id is that same code, exactly
-  // how KrHomeClient keys the 시도 map off SidoMeta.code. The topojson always
-  // has every 시군구 in the province (e.g. all 42 for 경기도), far more than
-  // KR_GU names — so labels/disabling fall back to the polygon's own
-  // (unprefixed) name and to "no real mean" rather than only the explicit
-  // pendingGus list, otherwise most of a partially-covered province's map
-  // would be clickable-but-broken instead of a clearly disabled "준비중".
+  // Map polygons use their topology code to find statistics. A city-wide
+  // KOSIS row has no one-to-one polygon, so it appears in the list only;
+  // unmatched smaller polygons remain disabled instead of inheriting that
+  // city-wide mean.
   const geoNameByCode = useMemo(() => new Map((guGeo?.features ?? []).map((f) => [String(f.id), f.properties.name])), [guGeo]);
   const guNameByCode = useMemo(() => {
     const map = new Map(geoNameByCode);
-    for (const g of availableGus) map.set(g.meta.code, g.meta.name);
-    for (const g of pendingGus) map.set(g.code, g.name);
+    for (const g of availableGus) if (g.meta.code) map.set(g.meta.code, g.meta.name);
+    for (const g of pendingGus) if (g.code) map.set(g.code, g.name);
     return map;
   }, [geoNameByCode, availableGus, pendingGus]);
   const slugByCode = useMemo(() => {
     const map = new Map<string, string>();
-    for (const g of availableGus) map.set(g.meta.code, g.meta.slug);
-    for (const g of pendingGus) map.set(g.code, g.slug);
+    for (const g of availableGus) if (g.meta.code) map.set(g.meta.code, g.meta.slug);
+    for (const g of pendingGus) if (g.code) map.set(g.code, g.slug);
     return map;
   }, [availableGus, pendingGus]);
-  const meanByCode = useMemo(() => new Map(availableGus.map((g) => [g.meta.code, g.income.mean])), [availableGus]);
+  const meanByCode = useMemo(
+    () => new Map(availableGus.flatMap((g) => g.meta.code ? [[g.meta.code, g.income.mean] as const] : [])),
+    [availableGus]
+  );
   const disabledCodeIds = useMemo(
     () => new Set((guGeo?.features ?? []).map((f) => String(f.id)).filter((code) => !meanByCode.has(code))),
     [guGeo, meanByCode]

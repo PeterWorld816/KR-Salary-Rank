@@ -8,15 +8,25 @@
 import { formatTemplate, translations } from "@/lib/i18n";
 import { useCountUp } from "@/lib/useCountUp";
 
-export default function KrRatioHeadline({ ratioPercent }: { ratioPercent: number }) {
+export default function KrRatioHeadline({
+  ratioPercent,
+  size = "default",
+}: {
+  ratioPercent: number;
+  size?: "default" | "hero";
+}) {
   const t = translations.ko;
   const above = ratioPercent >= 100;
+  const equal = Math.round(ratioPercent * 10) === 1000;
   const target = Math.abs(Math.round((ratioPercent - 100) * 10) / 10);
   const displayed = useCountUp(target);
+  const colorClass = equal ? "text-text-secondary" : above ? "text-accent" : "text-warn";
 
   return (
-    <div className="text-display leading-none text-warn">
-      {formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, { percent: displayed.toFixed(1) })}
+    <div className={`${size === "hero" ? "text-hero" : "text-display"} leading-tight ${colorClass}`}>
+      {equal
+        ? t.krRatioEqualText
+        : formatTemplate(above ? t.krRatioAboveTemplate : t.krRatioBelowTemplate, { percent: displayed.toFixed(1) })}
     </div>
   );
 }

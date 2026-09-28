@@ -8,6 +8,7 @@
 // data/kr/skorea-provinces-2018-topo-simple.json (source: southkorea/southkorea-maps,
 // KOGL Type 1 license), so KrMap can join a clicked polygon back to a slug
 // without re-deriving it from the Korean name string.
+import regionIncomeData from "@/data/kr/regionIncome.json";
 
 export type SidoMeta = {
   code: string; // 2-digit KOSIS province code, matches the province topojson's feature.properties.code
@@ -62,82 +63,44 @@ export type GuMeta = {
   name: string; // matches data/kr/regionIncome.json's `name` when available
   parentSlug: string; // SidoMeta.slug
   available: boolean;
-  // 5-digit 시군구 code, first 2 digits = parent SidoMeta.code — matches the
-  // 시군구 topojson's feature.properties.code (data/kr/skorea-municipalities-2018-topo-simple.json,
-  // same southkorea/southkorea-maps source as the province topology), so
-  // KrMap can join a clicked gu polygon back to a slug the same way it joins
-  // sido polygons by SidoMeta.code. The gu topojson's own feature name has no
-  // sido prefix (e.g. plain "동구"), so this code — not the name — is the key.
-  code: string;
+  // Matches the municipality topology's feature.properties.code. Older
+  // boundaries can use a code from a previous parent province (e.g. Gunwi);
+  // the parentSlug here is the current statistical assignment. City-wide
+  // statistics have no single polygon code and are selected from the list.
+  code?: string;
+  aggregation?: "city";
 };
 
-export const KR_GU: GuMeta[] = [
-  { slug: "seoul-gangnam", name: "강남구", parentSlug: "seoul", available: true, code: "11230" },
-  { slug: "seoul-seocho", name: "서초구", parentSlug: "seoul", available: true, code: "11220" },
-  { slug: "seoul-yongsan", name: "용산구", parentSlug: "seoul", available: true, code: "11030" },
-  { slug: "seoul-songpa", name: "송파구", parentSlug: "seoul", available: true, code: "11240" },
-  { slug: "seoul-jongno", name: "종로구", parentSlug: "seoul", available: true, code: "11010" },
-  { slug: "seoul-seongdong", name: "성동구", parentSlug: "seoul", available: true, code: "11040" },
-  { slug: "seoul-mapo", name: "마포구", parentSlug: "seoul", available: true, code: "11140" },
-  { slug: "seoul-yangcheon", name: "양천구", parentSlug: "seoul", available: true, code: "11150" },
-  { slug: "seoul-yeongdeungpo", name: "영등포구", parentSlug: "seoul", available: true, code: "11190" },
-  { slug: "seoul-seodaemun", name: "서대문구", parentSlug: "seoul", available: true, code: "11130" },
-  { slug: "seoul-dongjak", name: "동작구", parentSlug: "seoul", available: true, code: "11200" },
-  { slug: "seoul-gangdong", name: "강동구", parentSlug: "seoul", available: true, code: "11250" },
-  { slug: "seoul-seongbuk", name: "성북구", parentSlug: "seoul", available: true, code: "11080" },
-  { slug: "seoul-gwangjin", name: "광진구", parentSlug: "seoul", available: true, code: "11050" },
-  { slug: "seoul-gangseo", name: "강서구", parentSlug: "seoul", available: true, code: "11160" },
-  { slug: "seoul-nowon", name: "노원구", parentSlug: "seoul", available: true, code: "11110" },
-  { slug: "seoul-dongdaemun", name: "동대문구", parentSlug: "seoul", available: true, code: "11060" },
-  { slug: "seoul-eunpyeong", name: "은평구", parentSlug: "seoul", available: true, code: "11120" },
-  { slug: "seoul-guro", name: "구로구", parentSlug: "seoul", available: true, code: "11170" },
-  { slug: "seoul-gwanak", name: "관악구", parentSlug: "seoul", available: true, code: "11210" },
-  { slug: "seoul-dobong", name: "도봉구", parentSlug: "seoul", available: true, code: "11100" },
-  { slug: "seoul-geumcheon", name: "금천구", parentSlug: "seoul", available: true, code: "11180" },
-  { slug: "seoul-gangbuk", name: "강북구", parentSlug: "seoul", available: true, code: "11090" },
-  { slug: "seoul-junggu", name: "중구", parentSlug: "seoul", available: false, code: "11020" },
-  { slug: "seoul-jungnang", name: "중랑구", parentSlug: "seoul", available: false, code: "11070" },
-  { slug: "incheon-donggu", name: "인천 동구", parentSlug: "incheon", available: true, code: "23020" },
-  { slug: "ulsan-bukgu", name: "울산 북구", parentSlug: "ulsan", available: true, code: "26040" },
-  { slug: "gyeonggi-icheon", name: "경기 이천시", parentSlug: "gyeonggi", available: true, code: "31210" },
+type IncomeRegionMetaRow = {
+  name: string;
+  level: string;
+  parentSlug?: string;
+  slug?: string;
+  code?: string;
+  aggregation?: "city";
+};
 
-  // 군위군(code 37310)은 2023-07 대구광역시로 편입됐지만 이 topojson(southkorea/southkorea-maps,
-  // 2018년 판)은 아직 옛 경상북도 코드로 남아 있어 대구·경북 어느 쪽에도 안전하게 귀속시킬 수
-  // 없다 — data/kr/regionIncome.json의 meta.note 참고. 지도 경계 데이터가 갱신되기 전까지는
-  // 여기 목록에서 의도적으로 뺐다.
-  { slug: "daegu-junggu", name: "중구", parentSlug: "daegu", available: false, code: "22010" },
-  { slug: "daegu-donggu", name: "동구", parentSlug: "daegu", available: false, code: "22020" },
-  { slug: "daegu-seogu", name: "서구", parentSlug: "daegu", available: false, code: "22030" },
-  { slug: "daegu-namgu", name: "남구", parentSlug: "daegu", available: false, code: "22040" },
-  { slug: "daegu-bukgu", name: "북구", parentSlug: "daegu", available: false, code: "22050" },
-  { slug: "daegu-suseong", name: "수성구", parentSlug: "daegu", available: true, code: "22060" },
-  { slug: "daegu-dalseo", name: "달서구", parentSlug: "daegu", available: true, code: "22070" },
-  { slug: "daegu-dalseong", name: "달성군", parentSlug: "daegu", available: true, code: "22310" },
+const incomeGuRows = (regionIncomeData.regions as IncomeRegionMetaRow[]).filter((row) => row.level === "gu");
+const availableGus: GuMeta[] = incomeGuRows.map((row) => {
+  if (!row.slug || !row.parentSlug) {
+    throw new Error(`Missing route metadata for income region: ${row.name}`);
+  }
+  return {
+    slug: row.slug,
+    name: row.name,
+    parentSlug: row.parentSlug,
+    available: true,
+    ...(row.code ? { code: row.code } : {}),
+    ...(row.aggregation ? { aggregation: row.aggregation } : {}),
+  };
+});
 
+const pendingGus: GuMeta[] = [
   { slug: "gyeongbuk-pohang-nam", name: "포항시남구", parentSlug: "gyeongbuk", available: false, code: "37011" },
   { slug: "gyeongbuk-pohang-buk", name: "포항시북구", parentSlug: "gyeongbuk", available: false, code: "37012" },
-  { slug: "gyeongbuk-gyeongju", name: "경주시", parentSlug: "gyeongbuk", available: true, code: "37020" },
-  { slug: "gyeongbuk-gimcheon", name: "김천시", parentSlug: "gyeongbuk", available: true, code: "37030" },
-  { slug: "gyeongbuk-andong", name: "안동시", parentSlug: "gyeongbuk", available: true, code: "37040" },
-  { slug: "gyeongbuk-gumi", name: "구미시", parentSlug: "gyeongbuk", available: true, code: "37050" },
-  { slug: "gyeongbuk-yeongju", name: "영주시", parentSlug: "gyeongbuk", available: true, code: "37060" },
-  { slug: "gyeongbuk-yeongcheon", name: "영천시", parentSlug: "gyeongbuk", available: true, code: "37070" },
-  { slug: "gyeongbuk-sangju", name: "상주시", parentSlug: "gyeongbuk", available: true, code: "37080" },
-  { slug: "gyeongbuk-mungyeong", name: "문경시", parentSlug: "gyeongbuk", available: true, code: "37090" },
-  { slug: "gyeongbuk-gyeongsan", name: "경산시", parentSlug: "gyeongbuk", available: true, code: "37100" },
-  { slug: "gyeongbuk-uiseong", name: "의성군", parentSlug: "gyeongbuk", available: true, code: "37320" },
-  { slug: "gyeongbuk-cheongsong", name: "청송군", parentSlug: "gyeongbuk", available: true, code: "37330" },
-  { slug: "gyeongbuk-yeongyang", name: "영양군", parentSlug: "gyeongbuk", available: true, code: "37340" },
-  { slug: "gyeongbuk-yeongdeok", name: "영덕군", parentSlug: "gyeongbuk", available: true, code: "37350" },
-  { slug: "gyeongbuk-cheongdo", name: "청도군", parentSlug: "gyeongbuk", available: false, code: "37360" },
-  { slug: "gyeongbuk-goryeong", name: "고령군", parentSlug: "gyeongbuk", available: true, code: "37370" },
-  { slug: "gyeongbuk-seongju", name: "성주군", parentSlug: "gyeongbuk", available: true, code: "37380" },
-  { slug: "gyeongbuk-chilgok", name: "칠곡군", parentSlug: "gyeongbuk", available: true, code: "37390" },
-  { slug: "gyeongbuk-yecheon", name: "예천군", parentSlug: "gyeongbuk", available: true, code: "37400" },
-  { slug: "gyeongbuk-bonghwa", name: "봉화군", parentSlug: "gyeongbuk", available: true, code: "37410" },
-  { slug: "gyeongbuk-uljin", name: "울진군", parentSlug: "gyeongbuk", available: true, code: "37420" },
-  { slug: "gyeongbuk-ulleung", name: "울릉군", parentSlug: "gyeongbuk", available: true, code: "37430" },
 ];
+
+export const KR_GU: GuMeta[] = [...availableGus, ...pendingGus];
 
 const guBySlug = new Map(KR_GU.map((g) => [g.slug, g]));
 
