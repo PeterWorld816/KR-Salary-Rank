@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site-url";
 import { KR_SIDO } from "@/data/kr/regionMeta";
+import { KR_INSIGHTS } from "@/app/insights/articles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -13,6 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const sido of KR_SIDO) {
     if (!sido.available) continue;
     entries.push({ url: absoluteUrl(`/${sido.slug}`), lastModified: now, changeFrequency: "monthly", priority: 0.7 });
+  }
+  entries.push({ url: absoluteUrl("/insights"), lastModified: now, changeFrequency: "monthly", priority: 0.7 });
+  for (const article of KR_INSIGHTS) {
+    entries.push({ url: absoluteUrl(`/insights/${article.slug}`), lastModified: now, changeFrequency: "monthly", priority: 0.6 });
   }
 
   return entries;

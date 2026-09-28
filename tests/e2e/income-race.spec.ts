@@ -18,7 +18,7 @@ test("typing income then immediately clicking a region carries the typed value",
   // Deliberately do NOT blur — click straight into the region list without
   // clicking/tabbing anywhere else first, the exact sequence that used to
   // drop the typed value.
-  await page.getByRole("button", { name: /^서울특별시/ }).click();
+  await page.getByRole("button", { name: /서울특별시 시군구 상세 가능/ }).click();
 
   await page.waitForURL(/\/seoul(\?|$)/);
   const url = new URL(page.url());
