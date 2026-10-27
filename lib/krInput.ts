@@ -1,6 +1,7 @@
-// Query-string codec for the /kr section — mirrors lib/usInput.ts's "?d=..."
-// pattern so the visitor's income survives navigation from /kr -> /kr/[region]
-// -> /kr/result without a server round trip.
+// Codec for the visitor's input. Day to day the input lives in
+// lib/krInputStore.ts (React state + sessionStorage), never in the URL; `d`/`o`
+// only appear in share links built by buildKrShareSearch, and in older
+// `?d=` links, both of which the store reads once and then strips.
 //
 // Deliberately just one field: unlike /us, there's no per-region gender/
 // marital-status/age-band income breakdown to compare against (see
@@ -33,7 +34,12 @@ export function readKrInputFromSearch(sp: URLSearchParams | { get(k: string): st
   };
 }
 
-export function buildKrSearchParams(input: KrInput, lang: string): URLSearchParams {
-  return new URLSearchParams({ d: encodeKrInput(input), o: input.occupationId, lang });
+// The one place `d`/`o` are written into a URL: the /result share link.
+export function buildKrShareSearch(input: KrInput, region: string, gu: string | null): string {
+  const params = new URLSearchParams({ region });
+  if (gu) params.set("gu", gu);
+  params.set("d", encodeKrInput(input));
+  params.set("o", input.occupationId);
+  return params.toString();
 }
 import { getOccupationById } from "@/data/kr/occupations";

@@ -46,7 +46,7 @@ test("share buttons render on /result and each action does something", async ({ 
   const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
   expect(clipboardText).toContain("소득 상위");
   expect(clipboardText).toContain("(추정)");
-  expect(clipboardText).toContain("/result?region=seoul&gu=seoul-gangnam&d=6000");
+  expect(clipboardText).toContain("/result?region=seoul&gu=seoul-gangnam&d=6000&o=general");
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "이미지 저장" }).click();
@@ -81,7 +81,7 @@ test("mobile region map and list fit the viewport", async ({ page }) => {
 
   await page.goto("/seoul");
 
-  await expect(page.getByRole("heading", { name: /서울특별시/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /서울특별시/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
@@ -99,4 +99,6 @@ test("insight articles are reachable and included in the sitemap", async ({ page
   expect(sitemap).toContain("/insights/2023-sido-average-income");
   expect(sitemap).toContain("/insights/seoul-district-income-gap");
   expect(sitemap).toContain("/insights/how-income-percentile-estimate-works");
+  expect(sitemap).toContain("/insights/take-home-pay-table-guide");
+  expect(sitemap).toContain("/insights/age-income-gap-interpretation");
 });

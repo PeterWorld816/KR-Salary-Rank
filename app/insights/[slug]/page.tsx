@@ -4,7 +4,8 @@ import Link from "next/link";
 import regionIncomeData from "@/data/kr/regionIncome.json";
 import Footer from "@/components/Footer";
 import { absoluteUrl } from "@/lib/site-url";
-import { KR_INSIGHTS } from "../articles";
+import { KR_INSIGHTS, KR_TAKE_HOME_TABLE_INCOMES } from "../articles";
+import { estimateKrTakeHome } from "@/lib/krTakeHome";
 
 type Params = { slug: string };
 
@@ -45,6 +46,38 @@ export default function InsightArticlePage({ params }: { params: Params }) {
           <h1 className="text-display font-bold leading-tight text-text">{article.title}</h1>
           <p className="mt-4 text-body leading-relaxed text-text-secondary">{article.description}</p>
         </header>
+
+        {article.table === "take-home" && (
+          <div className="mb-8 overflow-x-auto rounded-xl border border-border">
+            <table className="w-full min-w-[320px] text-left text-caption">
+              <caption className="sr-only">연봉별 세후 월 실수령액 추정표, 단위 원</caption>
+              <thead className="bg-bg-subtle text-text-secondary">
+                <tr>
+                  <th className="px-4 py-3">연봉</th>
+                  <th className="px-4 py-3 text-right">4대보험(월)</th>
+                  <th className="px-4 py-3 text-right">세금(월)</th>
+                  <th className="px-4 py-3 text-right">실수령액(월)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {KR_TAKE_HOME_TABLE_INCOMES.map((income) => {
+                  const r = estimateKrTakeHome(income);
+                  return (
+                    <tr key={income} className="border-t border-border">
+                      <th scope="row" className="px-4 py-3 font-medium text-text">{income.toLocaleString("ko-KR")}만원</th>
+                      <td className="px-4 py-3 text-right tabular-nums text-text-secondary">{(r.pension + r.health + r.longTermCare + r.employment).toLocaleString("ko-KR")}원</td>
+                      <td className="px-4 py-3 text-right tabular-nums text-text-secondary">{(r.incomeTax + r.localTax).toLocaleString("ko-KR")}원</td>
+                      <td className="px-4 py-3 text-right font-semibold tabular-nums text-text">{Math.round(r.net).toLocaleString("ko-KR")}원</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <p className="px-4 py-3 text-caption text-text-tertiary">
+              추정치. 2026년 4대보험 요율과 소득세법 기준, 1인 가구·비과세 수당 없음·부양가족 공제 없음 가정.
+            </p>
+          </div>
+        )}
 
         {showProvinceTable && (
           <div className="mb-8 overflow-x-auto rounded-xl border border-border">

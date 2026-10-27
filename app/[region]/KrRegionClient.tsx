@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useMemo } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import type { FeatureCollection, Geometry } from "geojson";
 import { formatTemplate, translations } from "@/lib/i18n";
@@ -10,11 +10,10 @@ import KrMap, { type KrMapFeatureProps } from "@/components/kr/KrMap";
 import KrGeoList from "@/components/kr/KrGeoList";
 import KrIncomeLegend from "@/components/kr/KrIncomeLegend";
 import KrResultCard from "@/components/kr/KrResultCard";
-import { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
 import Footer from "@/components/Footer";
 import Spinner from "@/components/Spinner";
 import type { SidoMeta, GuMeta } from "@/data/kr/regionMeta";
-import type { KrRegionIncome } from "@/lib/krIncomeCalc";
+import { getEstimateNote, type KrRegionIncome } from "@/lib/krIncomeCalc";
 import { formatManwon } from "@/lib/krFormat";
 import { incomeFill } from "@/components/colorScale";
 import { buildMailto } from "@/lib/contact";
@@ -25,18 +24,17 @@ function KrRegionContent({
   availableGus,
   pendingGus,
   guGeo,
+  children,
 }: {
   sido: SidoMeta;
   income: KrRegionIncome;
   availableGus: { meta: GuMeta; income: KrRegionIncome }[];
   pendingGus: GuMeta[];
   guGeo: FeatureCollection<Geometry, KrMapFeatureProps> | null;
+  children?: React.ReactNode; // server-rendered region write-up (see page.tsx)
 }) {
   const t = translations.ko;
   const router = useRouter();
-  const sp = useSearchParams();
-  const qs = sp.toString();
-  const input = readKrInputFromSearch(sp);
 
   const guItems = useMemo(
     () => [
@@ -45,6 +43,7 @@ function KrRegionContent({
         name: g.meta.name,
         sub: formatManwon(g.income.mean),
         badge: g.meta.aggregation === "city" ? "시 전체" : undefined,
+        estimateNote: getEstimateNote(g.income) ?? undefined,
       })),
       ...pendingGus.map((g) => ({ id: g.slug, name: g.name, sub: t.krPendingBadge, disabled: true })),
     ],
@@ -52,9 +51,9 @@ function KrRegionContent({
   );
 
   // Map polygons use their topology code to find statistics. A city-wide
-  // KOSIS row has no one-to-one polygon, so it appears in the list only;
-  // unmatched smaller polygons remain disabled instead of inheriting that
-  // city-wide mean.
+  // KOSIS row has no one-to-one polygon, so it appears in the list only; its
+  // 일반구 polygons carry their own isEstimate rows (the city-wide mean),
+  // labelled "추정" on the map and in the list.
   const geoNameByCode = useMemo(() => new Map((guGeo?.features ?? []).map((f) => [String(f.id), f.properties.name])), [guGeo]);
   const guNameByCode = useMemo(() => {
     const map = new Map(geoNameByCode);
@@ -72,6 +71,10 @@ function KrRegionContent({
     () => new Map(availableGus.flatMap((g) => g.meta.code ? [[g.meta.code, g.income.mean] as const] : [])),
     [availableGus]
   );
+  const estimateCodes = useMemo(
+    () => new Set(availableGus.flatMap((g) => (g.meta.code && g.income.isEstimate ? [g.meta.code] : []))),
+    [availableGus]
+  );
   const disabledCodeIds = useMemo(
     () => new Set((guGeo?.features ?? []).map((f) => String(f.id)).filter((code) => !meanByCode.has(code))),
     [guGeo, meanByCode]
@@ -82,12 +85,10 @@ function KrRegionContent({
     return values.length ? { min: Math.min(...values), max: Math.max(...values) } : { min: 0, max: 1 };
   }, [meanByCode]);
 
+  // Region/구 only — the income itself travels in lib/krInputStore.ts.
   function resultHref(guSlug?: string) {
-    const params = new URLSearchParams(sp.toString());
-    params.set("region", sido.slug);
-    params.set("d", String(input.annualIncome));
+    const params = new URLSearchParams({ region: sido.slug });
     if (guSlug) params.set("gu", guSlug);
-    else params.delete("gu");
     return `/result?${params.toString()}`;
   }
 
@@ -115,7 +116,8 @@ function KrRegionContent({
     const name = guNameByCode.get(code) ?? code;
     if (disabledCodeIds.has(code)) return `${name} — ${t.krPendingBadge}`;
     const mean = meanByCode.get(code);
-    return mean != null ? `${name} — ${formatManwon(mean)}` : name;
+    if (mean == null) return name;
+    return `${name} — ${formatManwon(mean)}${estimateCodes.has(code) ? " (추정)" : ""}`;
   }
 
   return (
@@ -123,7 +125,7 @@ function KrRegionContent({
       <KrResultCard presetSidoSlug={sido.slug} presetGuSlug={null} />
 
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
-        <Link href={qs ? `/?${qs}` : "/"} className="mb-6 inline-flex items-center gap-1 text-caption text-text-secondary transition-colors hover:text-text">
+        <Link href="/" className="mb-6 inline-flex items-center gap-1 text-caption text-text-secondary transition-colors hover:text-text">
           <ChevronLeft className="h-4 w-4" />
           {t.krBackToKrMap}
         </Link>
@@ -191,6 +193,8 @@ function KrRegionContent({
           </div>
         )}
 
+        {children}
+
         <div className="mt-8 rounded-lg bg-surface px-4 py-3 text-center">
           <p className="text-caption text-text-tertiary">{t.krDisclaimer}</p>
         </div>
@@ -207,6 +211,7 @@ export default function KrRegionClient(props: {
   availableGus: { meta: GuMeta; income: KrRegionIncome }[];
   pendingGus: GuMeta[];
   guGeo: FeatureCollection<Geometry, KrMapFeatureProps> | null;
+  children?: React.ReactNode;
 }) {
   return (
     <Suspense

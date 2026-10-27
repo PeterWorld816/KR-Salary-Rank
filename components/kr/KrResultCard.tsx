@@ -6,13 +6,13 @@
 // data), not the estimated percentile — see lib/krIncomeCalc.ts's top-of-file
 // comment for why those two numbers carry different weight here.
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { formatTemplate, translations } from "@/lib/i18n";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
 import KrRatioHeadline from "@/components/kr/KrRatioHeadline";
 import { getTier } from "@/lib/tier";
-import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
+import KrInputPanel from "@/components/kr/KrInputPanel";
+import { useKrInput } from "@/lib/krInputStore";
 import Spinner from "@/components/Spinner";
 import { buildKrIncomeComparison, getMostSpecificKrComparison } from "@/lib/krIncomeCalc";
 import { buildKrOccupationComparison } from "@/lib/krOccupation";
@@ -23,8 +23,7 @@ const CHART_MAX = 15000; // 만원
 
 function KrResultCardInner({ presetSidoSlug, presetGuSlug }: { presetSidoSlug: string | null; presetGuSlug: string | null }) {
   const t = translations.ko;
-  const sp = useSearchParams();
-  const input = readKrInputFromSearch(sp);
+  const input = useKrInput();
 
   const rows = buildKrIncomeComparison(input.annualIncome, presetSidoSlug, presetGuSlug);
   const best = getMostSpecificKrComparison(rows);

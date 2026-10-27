@@ -23,7 +23,7 @@ export default function KrAboutPage() {
       </LegalSection>
 
       <LegalSection heading="데이터 출처">
-        <p>이 사이트에 표시되는 지역 평균 소득은 아래 출처에서 담당자가 직접 확인한 실측값이며, 임의로 추정한 값이 아닙니다:</p>
+        <p>이 사이트에 표시되는 지역 평균 소득은 아래 공식 통계에서 계산한 값입니다. 공식 통계가 없는 일부 구는 &ldquo;추정&rdquo; 배지를 붙여 따로 표시합니다:</p>
         <ul className="list-disc space-y-2 pl-5">
           <li>
             <span className="font-semibold text-text-secondary">국세청 국세통계 4.2.15 — 시군구별 근로소득 연말정산 신고현황 (2023년 귀속)</span>
@@ -40,22 +40,10 @@ export default function KrAboutPage() {
               . 주소지 기준 급여총계 금액을 신고 인원으로 나눠 1인당 연평균을 계산했습니다.
             </span>
           </li>
-          <li>
-            <span className="font-semibold text-text-secondary">대구·경북 일부 구/군의 2024년 귀속 자료</span>
-            <br />
-            <a
-              href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4080807"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent hover:underline"
-            >
-              경북일보의 TASIS 국세통계 인용 기사 (대구 3개 구·경북 20개 시군)
-            </a>
-          </li>
         </ul>
         <p className="text-text-tertiary">
           기준 시점: {krRegionIncomeMeta.asOf}. 읍·면·동 평균은 해당 통계표에 공개되어 있지 않아 제공하지 않습니다.
-          고양·성남·수원·안산·안양·용인·청주·천안·전주·포항·창원은 구별 값이 아닌 시 전체 값만 공개되어 있어, 목록에는 시 평균으로 표시하고 구별 지도 경계에 복제하지 않습니다.
+          고양·성남·수원·안산·안양·용인·청주·천안·전주·포항·창원은 구별 값이 아닌 시 전체 값만 공개되어 있어, 목록에는 시 평균을 실제값으로 표시하고 그 아래 일반구(예: 수원시 장안구)에는 같은 시 평균을 &ldquo;추정&rdquo; 배지와 함께 표시합니다.
           세종은 단일 시 경계와 시/도 경계가 같아 시/도 평균을 시 전체 값으로도 표시합니다.
         </p>
       </LegalSection>

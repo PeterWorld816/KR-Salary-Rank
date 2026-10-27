@@ -9,34 +9,38 @@
 ## 데이터 & 계산 로직
 
 - `data/kr/regionIncome.json` — 전국·17개 시/도·KOSIS 2023년 귀속 상세표의 228개 행
-  (217개는 지도 코드와 직접 연결되고, 11개는 공식 자료가 시 전체 평균으로만 제공), 그리고
-  단일 시 경계인 세종에 시/도 총계를 표시하기 위한 지역 행 1개.
-  대구·경북 23개 기존 구/군 수치만 더 최신인 2024년 귀속값을 유지합니다.
+  (217개는 지도 코드와 직접 연결되고, 11개는 공식 자료가 시 전체 평균으로만 제공), 단일 시
+  경계인 세종 행 1개, 그리고 시 전체만 공개된 도시의 일반구 지도 경계 32개에 시 평균을 넣은
+  추정 행. 모든 행에 `source`, `year`, `isEstimate`가 있고, 추정 행은 화면에 "추정" 배지로 표시됩니다.
   모든 평균은 급여총계 금액(백만원)을 신고 인원(명)으로 나누고 만원 단위로 반올림했습니다.
 - `data/kr/kosis-income-summary-2023.tsv`, `data/kr/kosis-sgg-income-2023.tsv` —
   KOSIS 표 `DT_133001N_4215`의 공식 집계행 및 시군구 원자료 스냅샷.
-- `scripts/update-kr-kosis-income.mjs` — 원자료 스냅샷에서 지역 평균과 지도 코드 연결을 재생성합니다.
+- `scripts/build-region-data.mjs` (`npm run build:region-data`) — `data/raw/`의 최신 CSV(없으면
+  위 스냅샷)에서 지역 평균, 지도 코드 연결, 추정 행을 다시 만듭니다. 자세한 내용은 `data/raw/README.md`.
 - `data/kr/regionMeta.ts` — 17개 시/도 코드와 라우팅 슬러그. 구/시 상세 메타데이터는
   `regionIncome.json`에서 생성되며, 2023년 7월 대구로 편입된 군위군도 현재 시도에 연결합니다.
 - `data/kr/skorea-provinces-2018-topo-simple.json` — 시/도 경계 지도.
   출처: [southkorea/southkorea-maps](https://github.com/southkorea/southkorea-maps)
   (통계청 SGIS 원자료를 공공누리 제1유형 라이선스로 가공).
 - `lib/krIncomeCalc.ts` — 지역 평균 대비 소득 비교, 추정 백분위 계산.
-- `lib/krInput.ts` — 입력 소득을 쿼리 스트링에 담아 `/` → `/[region]` → `/result` 이동 간
-  값을 유지하는 코덱.
+- `lib/krInputStore.ts` — 입력 소득·직업군을 React 상태와 sessionStorage에만 보관합니다(주소창에 쓰지 않음).
+  `lib/krInput.ts`의 `buildKrShareSearch`가 공유 링크에만 `d`·`o`를 담고, 그 링크(및 예전 `?d=` 링크)로
+  들어오면 값을 복원한 뒤 `history.replaceState`로 주소를 정리합니다.
+- `lib/kr-constants.ts` — 4대보험 요율·소득세 공제 기준(기준연도·출처 주석 포함). `lib/krTakeHome.ts`가 세후 실수령액·DSR 참고치를 계산합니다.
+- `lib/krRegionNarrative.ts` — 시/도 페이지의 데이터 기반 설명 문단과 시군구 표.
 
 ## 데이터 추가 가이드
 
 KOSIS 표의 최신 수록 연도는 2023년 귀속(자료갱신일 2026-02-20)입니다. 현재 228개 상세 행을
 반영했으며, 고양·성남·수원·안산·안양·용인·청주·천안·전주·포항·창원은 공식 표가 구별이 아닌
-시 전체 평균만 제공하므로 목록에 시 평균으로 표시합니다. 세종은 하위 구분이 없는 단일 시 경계에
-시/도 총계를 그대로 연결합니다. 구별 통계가 없는 평균을 하위 구 경계에 복사하지 않습니다.
-읍·면·동별 근로소득 평균은 이 표에서 제공되지 않습니다.
+시 전체 평균만 제공하므로 목록에 시 평균으로 표시하고, 하위 일반구 경계에는 같은 값을
+`isEstimate: true` 추정치로 넣습니다. 세종은 하위 구분이 없는 단일 시 경계에
+시/도 총계를 그대로 연결합니다. 읍·면·동별 근로소득 평균은 이 표에서 제공되지 않습니다.
 
-새 KOSIS 자료를 반영할 때에는 원표에서 지역명·급여총계 인원·급여총계 금액을 확인한 후 TSV
-스냅샷을 갱신하고 `node scripts/update-kr-kosis-income.mjs`를 실행하세요. 스크립트는 모든
-지역명이 현재 시군구 지도 코드와 정확히 매칭되는지 검사하고, 일대일 폴리곤이 없는 시 전체 값은
-`aggregation: "city"`로 분리합니다. 집계 단위가 다른 통계를 지도 구별 값처럼 보이게 해서는 안 됩니다.
+새 KOSIS 자료를 반영할 때에는 `data/raw/README.md`의 경로대로 CSV를 받아 `data/raw/`에 넣고
+`npm run build:region-data`를 실행하세요. 스크립트는 모든 지역명이 현재 시군구 지도 코드와
+정확히 매칭되는지 검사하고, 일대일 폴리곤이 없는 시 전체 값은 `aggregation: "city"`로 분리하며,
+값이 없는 지도 경계가 하나라도 남으면 실패합니다. 추정값은 반드시 `isEstimate: true`로 남겨야 합니다.
 그 다음 `npm run build`와 E2E를 실행해 지도·목록·결과 화면을 검증합니다.
 
 **주의 — 통계 기준**: `DT_133001N_4215`는 주소지 기준(거주지) 근로소득입니다. 사업체 소재지
@@ -62,7 +66,7 @@ KOSIS 표의 최신 수록 연도는 2023년 귀속(자료갱신일 2026-02-20)�
 app/
   page.tsx / KrHomeClient.tsx        # 홈 — 시/도 지도
   [region]/page.tsx / KrRegionClient.tsx  # 시/도별 시군구 지도 + 결과 진입점
-  result/page.tsx                    # 결과 대시보드 (?region=&gu=&d= 로 답변 유지)
+  result/page.tsx                    # 결과 대시보드 (?region=&gu=, 공유 링크만 &d=&o=)
   about/ · privacy/ · contact/       # 정적 안내 페이지
 data/kr/
   regionIncome.json / regionMeta.ts / skorea-provinces-2018-topo-simple.json

@@ -6,18 +6,18 @@
 // entirely, so visitors can see what's coming rather than wondering why /kr
 // looks thinner than /us — see data/kr/regionIncome.json's meta.note for why
 // no per-demographic regional data exists yet.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, Home } from "lucide-react";
 import { translations } from "@/lib/i18n";
 import { formatManwonCompact } from "@/lib/krFormat";
-import { readKrInputFromSearch, buildKrSearchParams, type KrInput } from "@/lib/krInput";
+import type { KrInput } from "@/lib/krInput";
+import { consumeKrInputFromUrl, getKrInputState, setKrInput, useKrInput } from "@/lib/krInputStore";
 import { KR_OCCUPATIONS } from "@/data/kr/occupations";
 
 const HEADER_HEIGHT = 56;
 
-export { readKrInputFromSearch };
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 // All-caps eyebrow micro-label — one of the few spots allowed below
 // `caption` (tailwind.config.ts's fontSize comment): at full caption size
@@ -68,15 +68,17 @@ function formatDigits(digits: string): string {
 function IncomeField({ label, value, onCommit }: { label: string; value: number; onCommit: (v: number) => void }) {
   const [text, setText] = useState(() => formatDigits(String(Math.round(value))));
 
-  // Commits on every keystroke (not just onBlur) so `form` state/the URL's
-  // `?d=` always match what's on screen. This used to commit only on blur,
-  // which raced with map/list clicks: clicking a region blurs the input and
-  // navigates in the same event tick, so the click's handler could read the
-  // pre-commit URL before React ever applied the blur's state update. See
-  // app/KrHomeClient.tsx's handleSelect / app/[region]/KrRegionClient.tsx's
-  // handleSelectGu, which build their destination URL from the current
-  // search params — committing immediately means those params are already
-  // current by the time any click can happen.
+  // The store can change underneath us (sessionStorage/share link loaded
+  // after the first render) — follow it unless it already matches the text.
+  useEffect(() => {
+    if (Number(digitsOf(text)) !== Math.round(value)) setText(formatDigits(String(Math.round(value))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  // Commits on every keystroke (not just onBlur) so the shared input store
+  // always matches what's on screen. Committing only on blur raced with
+  // map/list clicks: clicking a region blurs the input and navigates in the
+  // same event tick, so the next page could read the pre-commit value.
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const input = e.target;
     const caret = input.selectionStart ?? input.value.length;
@@ -194,25 +196,28 @@ function OccupationField({ value, onCommit }: { value: string; onCommit: (v: str
 
 export default function KrInputPanel() {
   const t = translations.ko;
-  const pathname = usePathname();
-  const sp = useSearchParams();
-  const [form, setForm] = useState<KrInput>(() => readKrInputFromSearch(sp));
-  const [expanded, setExpanded] = useState(() => !sp.get("d"));
+  const form = useKrInput();
+  // Open until the visitor has entered something. Starts open to match the
+  // server HTML, then collapses before paint once the store says otherwise.
+  const [expanded, setExpanded] = useState(true);
   // Collapsed by default — these three fields are all "준비중" (no data
   // behind them yet), so leading with them above the one field that actually
   // does something pushed the real income input below the fold on mobile.
   const [showDemographics, setShowDemographics] = useState(false);
 
+  useIsomorphicLayoutEffect(() => {
+    // Share links / old `?d=` links: load into the store, then clean the URL.
+    consumeKrInputFromUrl();
+    if (getKrInputState().touched) setExpanded(false);
+  }, []);
+
+  // Values only go into React state + sessionStorage, never the address bar.
   function apply(next: KrInput) {
-    setForm(next);
-    const params = new URLSearchParams(sp.toString());
-    params.set("d", String(next.annualIncome));
-    params.set("o", next.occupationId);
-    window.history.replaceState(null, "", `${pathname}?${params.toString()}`);
+    setKrInput(next);
   }
 
   const summary = formatManwonCompact(form.annualIncome);
-  const homeHref = `/?${buildKrSearchParams(form, "ko").toString()}`;
+  const homeHref = "/";
 
   return (
     <>

@@ -30,8 +30,14 @@ export type KrRegionIncome = {
   slug?: string;
   code?: string;
   aggregation?: "city";
-  sourceYear?: number;
   mean: number; // 만원, pre-tax annual average
+  source: string; // 출처명 — for estimates, how the value was derived
+  year: number; // 귀속연도
+  // true = no published figure for this exact area; `mean` is borrowed from
+  // `estimateBasis` (a city-wide or 시/도 row) — see scripts/build-region-data.mjs.
+  isEstimate: boolean;
+  estimateMethod?: "city-mean" | "sido-mean";
+  estimateBasis?: string; // slug of the city row, or the 시/도 slug
 };
 
 const REGIONS = regionIncomeData.regions as KrRegionIncome[];
@@ -78,7 +84,17 @@ export function getPendingGusForSido(sidoSlug: string): GuMeta[] {
   return getGusForSidoSlug(sidoSlug).filter((g) => !g.available);
 }
 
-export function getAvailableSidoList(): { meta: SidoMeta; income: KrRegionIncome }[] {
+// One-line explanation for the "추정" badge tooltip, or null for real values.
+export function getEstimateNote(region: KrRegionIncome): string | null {
+  if (!region.isEstimate) return null;
+  const basisName =
+    region.estimateMethod === "city-mean"
+      ? regionBySlug.get(region.estimateBasis ?? "")?.name
+      : getSidoBySlug(region.estimateBasis ?? "")?.name;
+  return `${region.name}만의 공식 통계가 없어 ${basisName ?? "상위 지역"} 전체 평균(${region.year}년 귀속)을 그대로 표시한 추정치예요.`;
+}
+
+export function getAvailableSidoList():{ meta: SidoMeta; income: KrRegionIncome }[] {
   return KR_SIDO.filter((s) => s.available)
     .map((meta) => ({ meta, income: regionByName.get(meta.name)! }))
     .filter((row) => row.income != null);
@@ -140,12 +156,43 @@ export function estimateTopPercentLogNormal(
   return Math.min(99.9, Math.max(0.1, topPercent));
 }
 
+// Acklam's rational approximation of the standard normal quantile (~1e-9
+// relative error) — the inverse of normalCdf above.
+function inverseNormalCdf(p: number): number {
+  const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+  const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+  const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+  const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+  const pLow = 0.02425;
+  if (p < pLow) {
+    const q = Math.sqrt(-2 * Math.log(p));
+    return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+  }
+  if (p > 1 - pLow) return -inverseNormalCdf(1 - p);
+  const q = p - 0.5;
+  const r = q * q;
+  return ((((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q) / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+}
+
+// Inverse of estimateTopPercentLogNormal: the annual income (만원) that would
+// sit at "top `topPercent`%" under the same log-normal assumption. Same
+// disclosure rules apply — it's an estimate, not a published cutoff.
+export function estimateIncomeAtTopPercent(
+  topPercent: number,
+  meanManwon: number,
+  sigma: number = KR_LOGNORMAL_SIGMA
+): number {
+  const mu = Math.log(meanManwon) - (sigma * sigma) / 2;
+  return Math.exp(mu + sigma * inverseNormalCdf(1 - topPercent / 100));
+}
+
 export type KrIncomeComparisonRow = {
   level: KrRegionLevel;
   name: string;
   mean: number;
   ratioPercent: number;
   estimatedTopPercent: number; // display-clamped 1-99, see clampDisplayPercent
+  estimateNote: string | null; // non-null when `mean` is an estimate (see getEstimateNote)
 };
 
 function toRow(level: KrRegionLevel, region: KrRegionIncome, annualIncomeManwon: number): KrIncomeComparisonRow {
@@ -153,6 +200,7 @@ function toRow(level: KrRegionLevel, region: KrRegionIncome, annualIncomeManwon:
     level,
     name: region.name,
     mean: region.mean,
+    estimateNote: getEstimateNote(region),
     ratioPercent: ratioToMeanPercent(annualIncomeManwon, region.mean),
     estimatedTopPercent: clampDisplayPercent(estimateTopPercentLogNormal(annualIncomeManwon, region.mean)),
   };

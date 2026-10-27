@@ -20,14 +20,14 @@ test("Gunwi follows its current Daegu parent despite the older map code", async 
   await expect(page).toHaveURL(/\/result\?.*gu=daegu-37310/);
 });
 
-test("city-wide KOSIS rows are labeled as aggregates, not assigned to ward polygons", async ({ page }) => {
+test("city-wide KOSIS rows are real; their ward polygons are labeled estimates", async ({ page }) => {
   await page.goto("/gyeonggi");
   await page.getByPlaceholder("시군구 이름 검색...").fill("수원시");
 
   const suwon = page.getByRole("button", { name: /수원시 시 전체 4,925만원/ });
-  const suwonWard = page.getByRole("button", { name: /수원시장안구 — 준비중/ });
+  const suwonWard = page.locator("button").filter({ hasText: /수원시 장안구.*추정.*4,925만원/ });
   await expect(suwon).toBeEnabled();
-  await expect(suwonWard).toBeDisabled();
+  await expect(suwonWard).toBeEnabled();
   await suwon.click();
   await expect(page).toHaveURL(/\/result\?.*gu=gyeonggi-3101-city/);
 });

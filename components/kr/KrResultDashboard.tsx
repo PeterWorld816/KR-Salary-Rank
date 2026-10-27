@@ -3,8 +3,8 @@
 // components/us/result/PersonalizedResult.tsx, scoped to what /kr actually
 // has: a ratio-to-average headline (real data) plus a clearly-disclosed
 // log-normal percentile estimate, compared at up to three levels (national /
-// 시·도 / 시군구). No age-band, net-worth, or 401(k) sections — there's no KR
-// data behind any of those yet.
+// 시·도 / 시군구), plus KrIncomeFeedback's take-home / savings / loan
+// estimates. Age-band comparison stays "준비중" — no KR data behind it yet.
 import { Suspense, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -17,8 +17,12 @@ import { buildKrOccupationComparison } from "@/lib/krOccupation";
 import DistributionChart from "@/components/DistributionChart";
 import TierBadge from "@/components/TierBadge";
 import KrRatioHeadline from "@/components/kr/KrRatioHeadline";
+import EstimateBadge from "@/components/kr/EstimateBadge";
+import KrIncomeFeedback from "@/components/kr/KrIncomeFeedback";
 import { getTier } from "@/lib/tier";
-import KrInputPanel, { readKrInputFromSearch } from "@/components/kr/KrInputPanel";
+import KrInputPanel from "@/components/kr/KrInputPanel";
+import { useKrInput } from "@/lib/krInputStore";
+import { buildKrShareSearch } from "@/lib/krInput";
 import KrShell from "@/components/kr/KrShell";
 import KrShareCard, {
   KR_SHARE_CARD_WIDTH,
@@ -42,7 +46,7 @@ function levelLabel(level: KrIncomeComparisonRow["level"], t: Translations): str
 function KrResultDashboardContent() {
   const t = translations.ko;
   const sp = useSearchParams();
-  const input = readKrInputFromSearch(sp);
+  const input = useKrInput();
   const sidoSlug = sp.get("region");
   const guSlug = sp.get("gu");
   const shareCardRef = useRef<HTMLDivElement>(null);
@@ -73,7 +77,9 @@ function KrResultDashboardContent() {
   const rows = buildKrIncomeComparison(input.annualIncome, sido.slug, gu && gu.parentSlug === sido.slug ? gu.slug : null);
   const best = getMostSpecificKrComparison(rows);
   const occupation = buildKrOccupationComparison(input.annualIncome, input.occupationId);
-  const backHref = "/" + (sp.toString() ? `?${sp.toString()}` : "");
+  const backHref = "/";
+  // The only URL that carries the income: the share link.
+  const sharePath = `/result?${buildKrShareSearch(input, sido.slug, gu && gu.parentSlug === sido.slug ? gu.slug : null)}`;
   const downloadName = `income-rank-${sido.slug}${gu ? `-${gu.slug}` : ""}.png`;
 
   return (
@@ -109,6 +115,7 @@ function KrResultDashboardContent() {
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-subtle px-3 py-1.5 text-caption font-semibold text-text-secondary">
                 <MapPin className="h-3.5 w-3.5 text-accent" />
                 {best.name} 기준
+                {best.estimateNote && <EstimateBadge note={best.estimateNote} />}
               </span>
               <span className="inline-flex items-center gap-1 text-caption text-text-tertiary">
                 <Sparkles className="h-3.5 w-3.5 text-warn" />
@@ -158,6 +165,8 @@ function KrResultDashboardContent() {
             <p className="mt-1 text-caption leading-relaxed text-text-secondary">{t.krEstimatedPercentileDisclaimer}</p>
           </div>
         </div>
+
+        <KrIncomeFeedback annualIncome={input.annualIncome} rows={rows} best={best} />
 
         <div className="mb-8 rounded-2xl border border-border bg-surface px-5 py-4">
           <div className="flex items-center justify-between gap-2">
@@ -218,6 +227,7 @@ function KrResultDashboardContent() {
             storyWidth={KR_STORY_CARD_WIDTH}
             storyHeight={KR_STORY_CARD_HEIGHT}
             enableKakao
+            sharePath={sharePath}
           />
         </div>
 
@@ -230,7 +240,10 @@ function KrResultDashboardContent() {
               </span>
               <dt className="min-w-0 flex-1">
                 <span className="block text-caption font-semibold text-text">{levelLabel(row.level, t)}</span>
-                <span className="block truncate text-caption text-text-tertiary">{row.name}</span>
+                <span className="flex min-w-0 items-center gap-1.5 text-caption text-text-tertiary">
+                  <span className="truncate">{row.name}</span>
+                  {row.estimateNote && <EstimateBadge note={row.estimateNote} />}
+                </span>
               </dt>
               <dd className="shrink-0 text-right">
                 <div className="text-body font-bold tabular-nums text-text">{formatManwon(row.mean)}</div>

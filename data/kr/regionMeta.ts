@@ -95,10 +95,10 @@ const availableGus: GuMeta[] = incomeGuRows.map((row) => {
   };
 });
 
-const pendingGus: GuMeta[] = [
-  { slug: "gyeongbuk-pohang-nam", name: "포항시남구", parentSlug: "gyeongbuk", available: false, code: "37011" },
-  { slug: "gyeongbuk-pohang-buk", name: "포항시북구", parentSlug: "gyeongbuk", available: false, code: "37012" },
-];
+// Empty since scripts/build-region-data.mjs gives every map polygon a value
+// (real or isEstimate). Kept so a future "known but no figure" area can be
+// listed as 준비중 without touching the UI.
+const pendingGus: GuMeta[] = [];
 
 export const KR_GU: GuMeta[] = [...availableGus, ...pendingGus];
 

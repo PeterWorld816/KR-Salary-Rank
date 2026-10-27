@@ -7,6 +7,8 @@ import { formatManwon } from "@/lib/krFormat";
 import { formatTemplate, translations } from "@/lib/i18n";
 import { absoluteUrl } from "@/lib/site-url";
 import KrRegionClient from "./KrRegionClient";
+import KrRegionReport from "@/components/kr/KrRegionReport";
+import { buildKrRegionNarrative } from "@/lib/krRegionNarrative";
 
 // Prerenders only the 시/도 that actually have a real regionIncome.json row
 // — a slug for a "준비중" province (e.g. /busan) isn't a real page yet, so
@@ -62,5 +64,11 @@ export default function KrRegionPage({ params }: { params: Params }) {
   // an inert, unclickable map.
   const guGeo = availableGus.length + pendingGus.length > 0 ? getKrGuGeoForSido(sido.code) : null;
 
-  return <KrRegionClient sido={sido} income={income} availableGus={availableGus} pendingGus={pendingGus} guGeo={guGeo} />;
+  const narrative = buildKrRegionNarrative(sido.slug);
+
+  return (
+    <KrRegionClient sido={sido} income={income} availableGus={availableGus} pendingGus={pendingGus} guGeo={guGeo}>
+      {narrative && <KrRegionReport regionName={sido.name} narrative={narrative} />}
+    </KrRegionClient>
+  );
 }

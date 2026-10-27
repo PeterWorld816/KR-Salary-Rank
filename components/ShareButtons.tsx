@@ -51,6 +51,7 @@ export default function ShareButtons({
   storyHeight,
   storyDownloadName,
   enableKakao = false,
+  sharePath,
 }: {
   cardRef: RefObject<HTMLDivElement>;
   shareTitle: string;
@@ -72,19 +73,24 @@ export default function ShareButtons({
   // which is still faster than the generic Web Share fallback on desktop/
   // browsers without navigator.share.
   enableKakao?: boolean;
+  // Path (+query) to share instead of the current address — the address bar
+  // stays clean, so the link that restores a result has to be built for it.
+  sharePath?: string;
 }) {
   const t = translations.ko;
   const [saving, setSaving] = useState(false);
   const [savingStory, setSavingStory] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const hasStory = Boolean(storyCardRef && storyWidth && storyHeight);
+  const shareUrl = () =>
+    typeof window === "undefined" ? "" : sharePath ? new URL(sharePath, window.location.origin).toString() : window.location.href;
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2800);
   };
 
   const handleShare = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
+    const url = shareUrl();
     if (navigator.share) {
       try {
         await navigator.share({ title: shareTitle, text: shareText, url });
@@ -124,7 +130,7 @@ export default function ShareButtons({
   };
 
   const handleKakaoShare = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : "";
+    const url = shareUrl();
     try {
       await navigator.clipboard.writeText(`${shareText}\n${url}`);
       showToast(t.shareKakaoCopied);

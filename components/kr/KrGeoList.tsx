@@ -3,6 +3,7 @@
 // contract as components/us/UsGeoList.tsx, duplicated rather than imported so
 // /kr stays independent of /us internals.
 import { useMemo, useState } from "react";
+import EstimateBadge from "./EstimateBadge";
 
 export type KrGeoListItem = {
   id: string;
@@ -12,6 +13,7 @@ export type KrGeoListItem = {
   // Small pill shown next to the name, e.g. "시군구 상세 가능" — see
   // app/KrHomeClient.tsx's sidoItems for the 시/도 list's usage.
   badge?: string;
+  estimateNote?: string; // set → "추정" pill with this tooltip
 };
 
 export default function KrGeoList({
@@ -76,6 +78,7 @@ export default function KrGeoList({
                     {item.badge}
                   </span>
                 )}
+                {item.estimateNote && <EstimateBadge note={item.estimateNote} inline />}
               </span>
               {item.sub && <span className="flex-shrink-0 tabular-nums text-text-tertiary">{item.sub}</span>}
             </button>

@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { FeatureCollection, Geometry } from "geojson";
 import { formatTemplate, translations } from "@/lib/i18n";
 import KrShell from "@/components/kr/KrShell";
@@ -18,8 +18,6 @@ import { formatManwon } from "@/lib/krFormat";
 function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureProps> }) {
   const t = translations.ko;
   const router = useRouter();
-  const sp = useSearchParams();
-  const qs = sp.toString();
 
   const meanByCode = useMemo(() => {
     const map = new Map<string, number | null>();
@@ -49,7 +47,7 @@ function KrHomeContent({ geo }: { geo: FeatureCollection<Geometry, KrMapFeatureP
   function getHref(code: string) {
     const sido = KR_SIDO.find((s) => s.code === code);
     if (!sido || !sido.available) return "/";
-    return qs ? `/${sido.slug}?${qs}` : `/${sido.slug}`;
+    return `/${sido.slug}`;
   }
 
   function getLabel(code: string) {

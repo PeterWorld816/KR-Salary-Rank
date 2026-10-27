@@ -27,6 +27,13 @@ const TIER_LEVELS: { max: number; emoji: string; label: string; color: TierColor
 
 const FALLBACK_TIER: Tier = { emoji: "🌟", label: "이제 시작이에요", color: "mint" };
 
+// The next existing tier above `topPercent` (smaller "top N%"), or null when
+// already in the top tier. Reuses TIER_LEVELS — no new thresholds.
+export function getNextTier(topPercent: number): { topPercent: number; tier: Tier } | null {
+  const next = [...TIER_LEVELS].reverse().find((l) => l.max < topPercent);
+  return next ? { topPercent: next.max, tier: { emoji: next.emoji, label: next.label, color: next.color } } : null;
+}
+
 export function getTier(topPercent: number): Tier {
   const level = TIER_LEVELS.find((l) => topPercent <= l.max);
   return level ? { emoji: level.emoji, label: level.label, color: level.color } : FALLBACK_TIER;
