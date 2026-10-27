@@ -4,6 +4,7 @@ import { translations } from "@/lib/i18n";
 import { absoluteUrl, getSiteUrl } from "@/lib/site-url";
 import RootBody from "@/components/RootBody";
 import AdSenseScript from "@/components/ads/AdSenseScript";
+import { ADSENSE_CLIENT_ID } from "@/lib/ads";
 
 // Default/fallback metadata only — every real route sets its own metadata
 // via generateMetadata, building canonical/og:url/og:image/twitter:image
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: translations.ko.krAppTitle,
   description: translations.ko.krTagline,
+  other: {
+    "google-adsense-account": ADSENSE_CLIENT_ID,
+  },
   openGraph: {
     title: translations.ko.krAppTitle,
     description: translations.ko.krTagline,

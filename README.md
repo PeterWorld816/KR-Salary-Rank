@@ -151,7 +151,10 @@ React 19 + eslint-config-next 16)을 먼저 검토하세요.
 
 ## AdSense
 
-- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` 환경변수 — 실제 광고가 로드되는 AdSense 퍼블리셔 ID
-  (`lib/ads.ts` 참고; `NEXT_PUBLIC_SITE_URL`이 가리키는 호스트에서만 광고가 렌더링됩니다).
+- 루트 레이아웃이 모든 페이지에 `google-adsense-account` 메타 태그와 AdSense 로더
+  (`adsbygoogle.js`)를 1개씩 넣습니다. 퍼블리셔 ID는 `lib/ads.ts`의 `ADSENSE_CLIENT_ID` 한 곳에서
+  관리하며, 로더는 환경변수/도메인 조건 없이 항상 로드됩니다(단, `/result`는 제외 + `noindex`).
+- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` 환경변수 — `<ins>` 광고 슬롯(`components/ads/AdUnit.tsx`)용
+  (`NEXT_PUBLIC_SITE_URL`이 가리키는 호스트에서만 슬롯이 렌더링됩니다).
 - `public/ads.txt` — 퍼블리셔 ID(`pub-7379794980536826`)가 반영되어 있습니다.
-  `NEXT_PUBLIC_ADSENSE_CLIENT_ID`와 항상 동일하게 유지하세요.
+  `ADSENSE_CLIENT_ID`와 항상 동일하게 유지하세요.

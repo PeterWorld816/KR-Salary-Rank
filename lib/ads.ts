@@ -18,6 +18,10 @@
 // No "server-only" import here anymore either — this module is now imported
 // from client components too.
 
+// The one AdSense publisher ID for this site. The site-wide loader and the
+// google-adsense-account meta tag use it directly — no env/host gating.
+export const ADSENSE_CLIENT_ID = "ca-pub-7379794980536826";
+
 export function getAdsenseClientId(): string | null {
   return process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || null;
 }
